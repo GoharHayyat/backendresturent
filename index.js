@@ -14,6 +14,7 @@ const router = express.Router();
 // app.use(express.static("MainMenu"));
 app.use("/MainMenu", express.static("MainMenu"));
 app.use("/MenuItems", express.static("MenuItems"));
+app.use("/Ingredient", express.static("Ingredient"));
 
 // app.use(express.static("public"));
 
