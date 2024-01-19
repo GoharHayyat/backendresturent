@@ -18,7 +18,16 @@ const menuitemSchema = new Schema({
   calories: {
     type: String,
   },
-  Mnutrients: {
+  carbohydrates: {
+    type: String,
+  },
+  fats: {
+    type: String,
+  },
+  protein: {
+    type: String,
+  },
+  totalpurchases: {
     type: String,
   },
   image: {

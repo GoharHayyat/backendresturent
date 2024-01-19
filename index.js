@@ -3,6 +3,7 @@ const mongoose = require("mongoose");
 const mongoDBURL = "mongodb://127.0.0.1:27017/controlPanel";
 const ControlPanel = require("./db/ControlPanel");
 const MenuItem = require("./db/MenuItem");
+const Ingredient = require("./db/IngredientSchema");
 
 const app = express();
 const cors = require("cors");
@@ -14,6 +15,7 @@ const router = express.Router();
 // app.use(express.static("MainMenu"));
 app.use("/MainMenu", express.static("MainMenu"));
 app.use("/MenuItems", express.static("MenuItems"));
+app.use("/Ingredient", express.static("Ingredient"));
 
 // app.use(express.static("public"));
 
@@ -40,6 +42,7 @@ app.use(
 // app.use(express.urlencoded({ limit: "50mb" }));
 
 const menuItemRouter = require("./routes/menuItemRoutes");
+const IngredientRouter = require("./routes/Ingredient");
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
@@ -165,6 +168,7 @@ app.get("/", (req, resp) => {
 });
 
 app.use(menuItemRouter);
+app.use(IngredientRouter);
 
 mongoose.connect(mongoDBURL).then((result) => {
   console.log("connected");

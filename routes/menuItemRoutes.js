@@ -29,7 +29,10 @@ router.post("/menuitems", upload.single("image"), async (req, res) => {
     menuItemPrice,
     menuItemDescription,
     calories,
-    Mnutrients,
+    carbohydrates,
+    fats,
+    protein,
+    totalpurchases,
   } = req.body;
   
   const imagePath = `MenuItems/${req.file.filename}`;
@@ -41,7 +44,10 @@ router.post("/menuitems", upload.single("image"), async (req, res) => {
     menuItemPrice,
     menuItemDescription,
     calories,
-    Mnutrients
+    carbohydrates,
+    fats,
+    protein,
+    totalpurchases,
   );
   // console.log(ctitle);
 
@@ -62,7 +68,10 @@ router.post("/menuitems", upload.single("image"), async (req, res) => {
       Price: menuItemPrice,
       describtion: menuItemDescription,
       calories: calories,
-      Mnutrients: Mnutrients,
+      carbohydrates:carbohydrates,
+    fats: fats,
+    protein:protein,
+    totalpurchases:totalpurchases,
       image: imagePath,
     });
     console.log(typeof menuItem); //  output 'object'
@@ -117,14 +126,17 @@ router.delete("/deleteitem/:id", async (req, resp) => {
 router.put("/menuitemsupdate/:id", upload.single("image"), async (req, res) => {
   try {
     const { id } = req.params;
-    const { title, calories, Mnutrients, Price, describtion } = req.body;
+    const { title, calories, carbohydrates,fats,protein,totalpurchases, Price, describtion } = req.body;
     let menuItem = await MenuItem.findById(id);
     if (!menuItem) {
       return res.status(404).json({ msg: "Menu item not found" });
     }
     menuItem.title = title;
     menuItem.calories = calories;
-    menuItem.Mnutrients = Mnutrients;
+    menuItem.carbohydrates = carbohydrates;
+    menuItem.fats = fats;
+    menuItem.protein = protein;
+    menuItem.totalpurchases = totalpurchases;
     menuItem.Price = Price;
     menuItem.describtion = describtion;
     if (req.file) {
