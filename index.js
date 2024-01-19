@@ -50,13 +50,12 @@ const storage = multer.diskStorage({
   },
 });
 
-
 const upload = multer({ storage });
-
-
 
 app.post("/getproduct", upload.single("image"), (req, res) => {
   const { title } = req.body;
+  console.log(title);
+  console.log(title);
   const imagePath = `MainMenu/${req.file.filename}`;
   fs.rename(req.file.path, imagePath, (err) => {
     if (err) {
@@ -121,7 +120,6 @@ app.get("/getAllproduct", async (req, resp) => {
   const data = await ControlPanel.find();
   resp.send(data);
 });
-
 
 app.delete("/deleteCategory/:id", async (req, resp) => {
   const controlPanel = await ControlPanel.findById(req.params.id);
