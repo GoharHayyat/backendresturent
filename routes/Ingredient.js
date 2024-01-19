@@ -61,7 +61,7 @@ router.delete("/ingredients/:id", async (req, res) => {
 
   try {
     const { id } = req.params;
-    console.log(id);
+    // console.log(id);
     // Check if the ID is valid
     if (!id) {
       return res.status(400).json({ error: "Invalid ID provided." });
