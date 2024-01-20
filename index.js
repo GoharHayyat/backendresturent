@@ -57,8 +57,7 @@ const upload = multer({ storage });
 
 app.post("/getproduct", upload.single("image"), (req, res) => {
   const { title } = req.body;
-  console.log(title);
-  console.log(title);
+
   const imagePath = `MainMenu/${req.file.filename}`;
   fs.rename(req.file.path, imagePath, (err) => {
     if (err) {
