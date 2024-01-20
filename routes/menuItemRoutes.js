@@ -34,10 +34,9 @@ router.post("/menuitems", upload.single("image"), async (req, res) => {
     protein,
     totalpurchases,
   } = req.body;
-  
+
   const imagePath = `MenuItems/${req.file.filename}`;
 
-  
   console.log(
     name,
     ctitle,
@@ -47,7 +46,7 @@ router.post("/menuitems", upload.single("image"), async (req, res) => {
     carbohydrates,
     fats,
     protein,
-    totalpurchases,
+    totalpurchases
   );
   // console.log(ctitle);
 
@@ -61,17 +60,17 @@ router.post("/menuitems", upload.single("image"), async (req, res) => {
 
     // Update the menu array for the given category
     const controlPanel = await ControlPanel.findOne({ title: ctitle });
-    
+
     const menuItem = new MenuItem({
       title: name,
       category: ctitle,
       Price: menuItemPrice,
       describtion: menuItemDescription,
       calories: calories,
-      carbohydrates:carbohydrates,
-    fats: fats,
-    protein:protein,
-    totalpurchases:totalpurchases,
+      carbohydrates: carbohydrates,
+      fats: fats,
+      protein: protein,
+      totalpurchases: totalpurchases,
       image: imagePath,
     });
     console.log(typeof menuItem); //  output 'object'
@@ -86,8 +85,6 @@ router.post("/menuitems", upload.single("image"), async (req, res) => {
     return res.status(500).json({ message: "Server Error" });
   }
 });
-
-
 
 router.get("/menuitems/:category", async (req, res) => {
   try {
@@ -117,6 +114,18 @@ router.get("/menuitemsUP/:id", async (req, res) => {
   }
 });
 
+// router.get("/menuitemsTrending/", async (req, res) => {
+//   try {
+//     // Retrieve all items and sort them by totalpurchases in descending order
+//     const allMenuItems = await MenuItem.find().sort({ totalpurchases: -1 });
+
+//     res.json(allMenuItems);
+//   } catch (error) {
+//     console.error(error);
+//     res.status(500).send("Server Error");
+//   }
+// });
+
 router.delete("/deleteitem/:id", async (req, resp) => {
   // resp.send(req.params.id);
   let result = await MenuItem.deleteOne({ _id: req.params.id });
@@ -126,7 +135,16 @@ router.delete("/deleteitem/:id", async (req, resp) => {
 router.put("/menuitemsupdate/:id", upload.single("image"), async (req, res) => {
   try {
     const { id } = req.params;
-    const { title, calories, carbohydrates,fats,protein,totalpurchases, Price, describtion } = req.body;
+    const {
+      title,
+      calories,
+      carbohydrates,
+      fats,
+      protein,
+      totalpurchases,
+      Price,
+      describtion,
+    } = req.body;
     let menuItem = await MenuItem.findById(id);
     if (!menuItem) {
       return res.status(404).json({ msg: "Menu item not found" });
@@ -144,6 +162,32 @@ router.put("/menuitemsupdate/:id", upload.single("image"), async (req, res) => {
     }
     menuItem = await menuItem.save();
     res.json(menuItem);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Server Error");
+  }
+});
+
+//Handling Trending Items
+
+router.get("/menuitemsTrending/", async (req, res) => {
+  try {
+    // Check if there are items with non-zero totalpurchases
+    const nonZeroPurchasesCount = await MenuItem.countDocuments({
+      totalpurchases: { $gt: 0 },
+    });
+
+    let menuItems;
+
+    if (nonZeroPurchasesCount > 0) {
+      // If there are items with non-zero totalpurchases, sort by totalpurchases
+      menuItems = await MenuItem.find().sort({ totalpurchases: -1 });
+    } else {
+      // If all items have zero totalpurchases, fetch random items
+      menuItems = await MenuItem.aggregate([{ $sample: { size: 5 } }]);
+    }
+
+    res.json(menuItems);
   } catch (error) {
     console.error(error);
     res.status(500).send("Server Error");
