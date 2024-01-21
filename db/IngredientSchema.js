@@ -11,7 +11,11 @@ const ingredientSchema = new mongoose.Schema({
   total: Number,
   check: {
     type: Boolean,
-    default: false, // Set a default value if not provided
+    default: false, 
+  },
+  inrestock: {
+    type: Boolean,
+    default: false,
   },
 });
 

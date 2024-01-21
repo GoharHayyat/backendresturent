@@ -9,7 +9,7 @@ router.post("/ingredients", async (req, res) => {
   res.setHeader("Access-Control-Allow-Origin", "*");
 
   try {
-    const { name, type, stock, price, total, check } = req.body;
+    const { name, type, stock, price, total, check, inrestock } = req.body;
 
     // Validate if 'name' is present in the request body
     if (!name) {
@@ -31,6 +31,7 @@ router.post("/ingredients", async (req, res) => {
       price,
       total,
       check,
+      inrestock,
     });
 
     // Save the ingredient to the database
@@ -75,6 +76,35 @@ router.delete("/ingredients/:id", async (req, res) => {
     }
 
     res.status(200).json({ message: "Ingredient deleted successfully." });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+
+router.put("/ingredients/:id/updateInrestock", async (req, res) => {
+  res.setHeader("Access-Control-Allow-Origin", "*");
+
+  try {
+    const productId = req.params.id;
+
+    console.log(productId);
+    // Find the ingredient by ID
+    const ingredient = await Ingredient.findById(productId);
+
+    // Check if the ingredient with the given ID exists
+    if (!ingredient) {
+      return res.status(404).json({ error: "Ingredient not found with the provided ID." });
+    }
+
+    // Update the 'inrestock' field to true
+    ingredient.inrestock = true;
+
+    // Save the updated ingredient to the database
+    const updatedIngredient = await ingredient.save();
+
+    res.status(200).json(updatedIngredient);
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Internal Server Error" });
