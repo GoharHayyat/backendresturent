@@ -9,7 +9,6 @@ router.use(bodyParser.json());
 
 router.post('/restock', async (req, res) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
-
   try {
     const orderData = req.body.orderData; // Assuming orderData is sent in the request body
     console.log(orderData);
@@ -19,6 +18,33 @@ router.post('/restock', async (req, res) => {
       products: orderData.products,
       orderDate: orderData.orderDate,
       bulk: true,
+      status: "pending", //yahan appoved or reject handle krna 
+    });
+
+    // Save the order to the database
+    await newOrder.save();
+
+    console.log('Order data stored in the database');
+
+    // Send a success response
+    res.status(200).json({ success: true });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
+router.post('/normalrestock', async (req, res) => {
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  try {
+    const orderData = req.body.orderData; // Assuming orderData is sent in the request body
+    console.log(orderData);
+
+    // Create a new order instance
+    const newOrder = new Restock({
+      products: orderData.products,
+      orderDate: orderData.orderDate,
+      bulk: false,
       status: "pending", //yahan appoved or reject handle krna 
     });
 
