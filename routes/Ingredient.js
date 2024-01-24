@@ -111,6 +111,69 @@ router.put("/ingredients/:id/updateInrestock", async (req, res) => {
   }
 });
 
+router.put("/ingredients/:id/rejectbutton", async (req, res) => {
+  res.setHeader("Access-Control-Allow-Origin", "*");
+
+  try {
+    const productId = req.params.id;
+
+    // console.log(productId);
+    // Find the ingredient by ID
+    const ingredient = await Ingredient.findById(productId);
+
+    // Check if the ingredient with the given ID exists
+    if (!ingredient) {
+      return res.status(404).json({ error: "Ingredient not found with the provided ID." });
+    }
+
+    // Update the 'inrestock' field to true
+    ingredient.inrestock = false;
+
+    // Save the updated ingredient to the database
+    const updatedIngredient = await ingredient.save();
+
+    res.status(200).json(updatedIngredient);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+router.put("/ingredients/:id/approvebutton", async (req, res) => {
+  res.setHeader("Access-Control-Allow-Origin", "*");
+
+  try {
+    const productId = req.params.id;
+
+    // Find the ingredient by ID
+    const ingredient = await Ingredient.findById(productId);
+
+    // Check if the ingredient with the given ID exists
+    if (!ingredient) {
+      return res.status(404).json({ error: "Ingredient not found with the provided ID." });
+    }
+
+    // Get the values from the request body
+    const { quantity  } = req.body;
+console.log(quantity )
+    // Update the 'inrestock' field to false
+    ingredient.inrestock = false;
+
+    // Update stock and total values
+    ingredient.stock = (ingredient.stock || 0) + quantity ;
+    ingredient.total = (ingredient.total || 0) + quantity ;
+
+    // Save the updated ingredient to the database
+    const updatedIngredient = await ingredient.save();
+
+    res.status(200).json(updatedIngredient);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+
 const mongoose = require('mongoose');
 const ObjectId = mongoose.Types.ObjectId;
 

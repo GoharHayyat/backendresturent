@@ -4,6 +4,7 @@ const orderSchema = new mongoose.Schema({
   products: Object,
   orderDate: Date,
   bulk: Boolean,
+  status: String,
 });
 
 
