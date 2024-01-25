@@ -40,6 +40,10 @@ const menuitemSchema = new Schema({
     type: String,
     // required: true,
   },
+  check: {
+    type: Boolean,
+    default: false,
+  },
 });
 
 const MenuItem = mongoose.model("MenuItem", menuitemSchema);
