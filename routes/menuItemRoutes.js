@@ -151,66 +151,50 @@ router.get("/menuitemsUP/:id", async (req, res) => {
 
     // console.log(category);
     const menuItems = await MenuItem.findById(id);
-    // res.send(menuItems);
-    res.json(menuItems);
-    // console.log(menuItems);
+
+    // Check ingredient stock for each menu item
+    const updatedMenuItems = await Promise.all(
+      menuItems.map(async (menuItem) => {
+        // Parse the description JSON string to get the ingredient quantities
+        const descriptionObject = JSON.parse(menuItem.describtion);
+
+        // Check ingredient stock
+        let anyIngredientsLessThanQuantity = false;
+
+        for (const ingredientName in descriptionObject) {
+          const quantityNeeded = descriptionObject[ingredientName];
+
+          // Find the ingredient in the Ingredients collection
+          const ingredient = await Ingredient.findOne({ name: ingredientName });
+
+          // Check if the ingredient exists and if its stock is less than required quantity
+          if (!ingredient || ingredient.stock < quantityNeeded) {
+            anyIngredientsLessThanQuantity = true;
+            break;
+          }
+        }
+
+        // Update the 'check' field based on ingredient availability
+        menuItem.check = anyIngredientsLessThanQuantity;
+
+        // Return the updated menu item
+        return menuItem.toObject(); // Convert to plain JavaScript object
+      })
+    );
+
+    res.json(updatedMenuItems);
   } catch (error) {
-    // console.error(error);
+    console.error(error);
     res.status(500).send("Server Error");
   }
+  //   // res.send(menuItems);
+  //   res.json(menuItems);
+  //   // console.log(menuItems);
+  // } catch (error) {
+  //   // console.error(error);
+  //   res.status(500).send("Server Error");
+  // }
 });
-
-// router.get("/menuitemsIN/:id", async (req, res) => {
-//   try {
-//     const { id } = req.params;
-
-//     // Find the menu item by ID
-//     const menuItems = await MenuItem.findById(id);
-
-//     // Parse the description JSON string to get the ingredient quantities
-//     const descriptionObject = JSON.parse(menuItems.description);
-
-//     // Check ingredient stock
-//     let allIngredientsAvailable = true;
-
-//     for (const ingredientName in descriptionObject) {
-//       const quantityNeeded = descriptionObject[ingredientName];
-
-//       // Find the ingredient in the Ingredients collection
-//       const ingredient = await Ingredient.findOne({ name: ingredientName });
-
-//       // Check if the ingredient exists and if its stock is sufficient
-//       if (!ingredient || ingredient.stock < quantityNeeded) {
-//         allIngredientsAvailable = false;
-//         break;
-//       }
-//     }
-
-//     // If all ingredients are available, send the menu item, otherwise, send an error
-//     if (allIngredientsAvailable) {
-//       res.json(menuItems);
-//     } else {
-//       res
-//         .status(400)
-//         .json({ error: "Insufficient stock for one or more ingredients" });
-//     }
-//   } catch (error) {
-//     console.error(error);
-//     res.status(500).send("Server Error");
-//   }
-// });
-
-// router.get("/menuitemsTrending/", async (req, res) => {
-//   try {
-//     // Retrieve all items and sort them by totalpurchases in descending order
-//     const allMenuItems = await MenuItem.find().sort({ totalpurchases: -1 });
-
-//     res.json(allMenuItems);
-//   } catch (error) {
-//     console.error(error);
-//     res.status(500).send("Server Error");
-//   }
-// });
 
 router.delete("/deleteitem/:id", async (req, resp) => {
   // resp.send(req.params.id);
