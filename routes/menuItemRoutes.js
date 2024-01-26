@@ -122,12 +122,17 @@ router.get("/menuitems/:category", async (req, res) => {
 
           // Find the ingredient in the Ingredients collection
           const ingredient = await Ingredient.findOne({ name: ingredientName });
-
-          // Check if the ingredient exists and if its stock is less than required quantity
-          if (!ingredient || ingredient.tempstock < quantityNeeded) {
-            anyIngredientsLessThanQuantity = true;
-            break;
+          if(ingredient){
+            if (!ingredient || ingredient.tempstock < quantityNeeded) {
+              anyIngredientsLessThanQuantity = true;
+              break;
+            }
           }
+          else{
+            // console.log("no ingrediant found")
+          }
+          // Check if the ingredient exists and if its stock is less than required quantity
+          
         }
 
         // Update the 'check' field based on ingredient availability
@@ -144,6 +149,7 @@ router.get("/menuitems/:category", async (req, res) => {
     res.status(500).send("Server Error");
   }
 });
+
 
 router.get("/menuitemsUP/:id", async (req, res) => {
   try {
