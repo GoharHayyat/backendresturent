@@ -7,6 +7,7 @@ const ingredientSchema = new mongoose.Schema({
   },
   type: String,
   stock: Number,
+  tempstock: Number,
   price: Number,
   total: Number,
   check: {

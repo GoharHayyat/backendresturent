@@ -9,18 +9,23 @@ router.post("/ingredients", async (req, res) => {
   res.setHeader("Access-Control-Allow-Origin", "*");
 
   try {
-    const { name, type, stock, price, total, check, inrestock } = req.body;
+    const { name, type, stock, price, total, check, inrestock, tempstock } =
+      req.body;
 
     // Validate if 'name' is present in the request body
     if (!name) {
-      return res.status(400).json({ error: "Name is required for the ingredient." });
+      return res
+        .status(400)
+        .json({ error: "Name is required for the ingredient." });
     }
 
     // Check if the ingredient with the same name already exists
     const existingIngredient = await Ingredient.findOne({ name });
 
     if (existingIngredient) {
-      return res.status(400).json({ error: "Ingredient with this name already exists." });
+      return res
+        .status(400)
+        .json({ error: "Ingredient with this name already exists." });
     }
 
     // Create a new ingredient
@@ -28,6 +33,7 @@ router.post("/ingredients", async (req, res) => {
       name,
       type,
       stock,
+      tempstock,
       price,
       total,
       check,
@@ -82,7 +88,6 @@ router.delete("/ingredients/:id", async (req, res) => {
   }
 });
 
-
 router.put("/ingredients/:id/updateInrestock", async (req, res) => {
   res.setHeader("Access-Control-Allow-Origin", "*");
 
@@ -95,7 +100,9 @@ router.put("/ingredients/:id/updateInrestock", async (req, res) => {
 
     // Check if the ingredient with the given ID exists
     if (!ingredient) {
-      return res.status(404).json({ error: "Ingredient not found with the provided ID." });
+      return res
+        .status(404)
+        .json({ error: "Ingredient not found with the provided ID." });
     }
 
     // Update the 'inrestock' field to true
@@ -123,7 +130,9 @@ router.put("/ingredients/:id/rejectbutton", async (req, res) => {
 
     // Check if the ingredient with the given ID exists
     if (!ingredient) {
-      return res.status(404).json({ error: "Ingredient not found with the provided ID." });
+      return res
+        .status(404)
+        .json({ error: "Ingredient not found with the provided ID." });
     }
 
     // Update the 'inrestock' field to true
@@ -150,18 +159,21 @@ router.put("/ingredients/:id/approvebutton", async (req, res) => {
 
     // Check if the ingredient with the given ID exists
     if (!ingredient) {
-      return res.status(404).json({ error: "Ingredient not found with the provided ID." });
+      return res
+        .status(404)
+        .json({ error: "Ingredient not found with the provided ID." });
     }
 
     // Get the values from the request body
-    const { quantity  } = req.body;
-console.log(quantity )
+    const { quantity } = req.body;
+    // console.log(quantity )
     // Update the 'inrestock' field to false
     ingredient.inrestock = false;
 
     // Update stock and total values
-    ingredient.stock = (ingredient.stock || 0) + quantity ;
-    ingredient.total = (ingredient.total || 0) + quantity ;
+    ingredient.stock = (ingredient.stock || 0) + quantity;
+    ingredient.tempstock = (ingredient.tempstock || 0) + quantity;
+    ingredient.total = (ingredient.total || 0) + quantity;
 
     // Save the updated ingredient to the database
     const updatedIngredient = await ingredient.save();
@@ -173,8 +185,125 @@ console.log(quantity )
   }
 });
 
+router.put("/ingredients/updatetempstock", async (req, res) => {
+  res.setHeader("Access-Control-Allow-Origin", "*");
 
-const mongoose = require('mongoose');
+  try {
+    // Assuming the request body is an array of objects
+    const ingredientsToUpdate = req.body;
+
+    console.log(ingredientsToUpdate);
+
+    let spaceAvailable = true;
+
+    for (const ingredientData of ingredientsToUpdate) {
+      const ingredient = await Ingredient.findOne({
+        name: ingredientData.name,
+      });
+
+      if (ingredient) {
+        // Ingredient found, you can perform your logic here
+        console.log(`Ingredient found: ${ingredient.name}`);
+
+        // Compare the quantity with tempstock
+        if (
+          ingredientData.quantity > ingredient.tempstock
+        ) {
+          console.log(
+            "ingrediant quantity",
+            ingredientData.quantity,
+            "temp stock",
+            ingredient.tempstock
+          );
+          spaceAvailable = false;
+          // console.log(`Not enough space for ${ingredient.name}`);
+          return res.status(400).json({ error: "Not enough space." });
+          // Your logic when space is not available for the ingredient
+        }
+        else{
+          console.log(
+            "ingrediant quantity",
+            ingredientData.quantity,
+            "temp stock",
+            ingredient.tempstock
+          );
+        }
+      } else {
+        // Ingredient not found, you can skip or handle it accordingly
+        console.log(`Ingredient not found: ${ingredientData.name}`);
+      }
+    }
+
+    if (spaceAvailable) {
+      console.log(`Space available for all ingredients`);
+      // Your logic when space is available for all ingredients.
+
+      for (const ingredientData of ingredientsToUpdate) {
+        const ingredient = await Ingredient.findOne({
+          name: ingredientData.name,
+        });
+
+        if (ingredient) {
+          ingredient.tempstock = Math.max((ingredient.tempstock || 0) - ingredientData.quantity, 0);
+          // Save the updated ingredient to the database
+          const updatedIngredient = await ingredient.save();
+          // console.log(updatedIngredient)
+        }
+        else {
+          // Ingredient not found, you can skip or handle it accordingly
+          console.log(`Ingredient not found: ${ingredientData.name}`);
+        }
+      }
+    } else {
+      // console.log(`Not enough space for all ingredients`);
+      return res.status(400).json({ error: "Not enough space for all ingredients" });
+      // Your logic when space is not available for all ingredients
+    }
+    // Send a response
+    res.status(200).json({ message: "Update successful" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+router.put("/ingredients/cartincreasebutton", async (req, res) => {
+  res.setHeader("Access-Control-Allow-Origin", "*");
+
+  try {
+    // Assuming the request body is an array of objects
+    const ingredientsToUpdate = req.body;
+
+    console.log(ingredientsToUpdate);
+
+    // let spaceAvailable = true;
+
+    for (const ingredientData of ingredientsToUpdate) {
+      const ingredient = await Ingredient.findOne({
+        name: ingredientData.name,
+      });
+
+      if (ingredient) {
+        ingredient.tempstock = Math.max((ingredient.tempstock || 0) + ingredientData.quantity, 0);
+          // Save the updated ingredient to the database
+          const updatedIngredient = await ingredient.save();
+      } else {
+        // Ingredient not found, you can skip or handle it accordingly
+        console.log(`Ingredient not found: ${ingredientData.name}`);
+      }
+    }
+
+    // Send a response
+    res.status(200).json({ message: "Update successful" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+
+
+const mongoose = require("mongoose");
 const ObjectId = mongoose.Types.ObjectId;
 
 router.get("/ingredientsdetails/:id", async (req, res) => {
@@ -201,6 +330,5 @@ router.get("/ingredientsdetails/:id", async (req, res) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
-
 
 module.exports = router;
