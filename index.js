@@ -4,7 +4,7 @@ const mongoDBURL = "mongodb://127.0.0.1:27017/controlPanel";
 const ControlPanel = require("./db/ControlPanel");
 const MenuItem = require("./db/MenuItem");
 const Ingredient = require("./db/IngredientSchema");
-
+const authRouter  =require('./routes/auth')
 const app = express();
 const cors = require("cors");
 var bodyParser = require("body-parser");
@@ -171,6 +171,7 @@ app.get("/", (req, resp) => {
 app.use(menuItemRouter);
 app.use(IngredientRouter);
 app.use(RestockRouter);
+app.use(authRouter)
 
 mongoose.connect(mongoDBURL).then((result) => {
   console.log("connected");
