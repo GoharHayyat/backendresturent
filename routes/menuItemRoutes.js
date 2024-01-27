@@ -151,6 +151,52 @@ router.get("/menuitems/:category", async (req, res) => {
 });
 
 
+router.get("/menuitemsinproductcard/:category", async (req, res) => {
+  try {
+    const { category } = req.params;
+    
+    // Find the menu item in the specified category
+    const menuItem = await MenuItem.findById(category);
+
+    // Check if the menu item exists
+    if (!menuItem) {
+      return res.status(404).json({ msg: "Menu item not found" });
+    }
+
+    // Parse the description JSON string to get the ingredient quantities
+    const descriptionObject = JSON.parse(menuItem.describtion);
+
+    // Check ingredient stock
+    let anyIngredientsLessThanQuantity = false;
+
+    for (const ingredientName in descriptionObject) {
+      const quantityNeeded = descriptionObject[ingredientName];
+
+      // Find the ingredient in the Ingredients collection
+      const ingredient = await Ingredient.findOne({ name: ingredientName });
+
+      if (ingredient) {
+        if (!ingredient || ingredient.tempstock < quantityNeeded) {
+          anyIngredientsLessThanQuantity = true;
+          break;
+        }
+      } else {
+        // console.log("no ingredient found");
+      }
+    }
+
+    // Update the 'check' field based on ingredient availability
+    menuItem.check = anyIngredientsLessThanQuantity;
+
+    // Return the updated menu item
+    res.json(menuItem.toObject()); // Convert to plain JavaScript object
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Server Error");
+  }
+});
+
+
 router.get("/menuitemsUP/:id", async (req, res) => {
   try {
     const { id } = req.params;
