@@ -155,7 +155,7 @@ const sendToken = (user, statusCode, res) => {
     res.status(statusCode).json({
         success: true,
         token,
-        favorites:user.favorites
+        favorites:user,
     });
 };
 module.exports = {register,login};
