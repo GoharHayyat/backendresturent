@@ -53,9 +53,9 @@ userSchema.methods.getResetPasswordToken = function(){
 }
 
 // // Monggose lets us make methods so we are creating a method that checks for password match
-// userSchema.methods.matchPasswords = async function(password){
-//   const match = await bcrypt.compare(password,this.password);
-//   return match;
-// };
+userSchema.methods.matchPasswords = async function(password){
+  const match = await bcrypt.compare(password,this.password);
+  return match;
+};
 const User = mongoose.model("User", userSchema);
 module.exports = User;
