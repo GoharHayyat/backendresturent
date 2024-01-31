@@ -94,6 +94,7 @@ app.post("/updateCategory/:id", upload.single("image"), async (req, res) => {
     console.log(prevTitle);
     console.log(controlpanel.title);
 
+    // console?
     if (req.file) {
       controlpanel.image = `MainMenu/${req.file.filename}`;
     }
