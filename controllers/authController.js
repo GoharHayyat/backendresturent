@@ -125,11 +125,6 @@ async function forgotPassword(req, res, next) {
     <a href="${resetUrl}" style="display: inline-block; padding: 10px 20px; background-color: #007bff; color: #fff; text-decoration: none; border-radius: 5px;">Reset Link</a>
 `;
 
-
-        // console.log("resetUrl",resetUrl)
-
-        // console.log("t",resetTokenn)
-        
         const options = {
             from : "info.restaurantshub@gmail.com", 
             to: email, 
@@ -149,7 +144,6 @@ async function forgotPassword(req, res, next) {
         // <p>Please go To the following link to reset your password.</p>
         // <a href=${resetUrl} clicktracking=off><h2>Reset Link</h2></a>
         // `;
-
         // try {
         //     sendEmail({
         //         to: user.email,
