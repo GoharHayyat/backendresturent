@@ -13,7 +13,7 @@ router.put("/resetpassword/:resetToken", authController.resetPassword);
 
 router.post('/manageFavorite', async(req, res) => {
     const { userId, favorites } = req.body;
-    console.log(req.body);
+    // console.log(req.body);
 
     try {
         // Find the user by ID
@@ -40,6 +40,52 @@ router.post('/manageFavorite', async(req, res) => {
     }
 });
 
+
+router.get('/checkisliked/:userId/:productId', async (req, res) => {
+    const { userId, productId } = req.params;
+
+    // console.log("fav user",userId)
+    // console.log("fav pro",productId)
+    try {
+        // Find the user by ID
+        const user = await User.findById(userId);
+
+        if (!user) {
+            return res.status(404).json({ error: 'User not found' });
+        }
+
+        // Check if the product ID is in the user's favorites
+        const isProductAvailable = user.favorites && user.favorites.includes(productId);
+
+        res.json({ available: isProductAvailable });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Server error' });
+    }
+});
+
+
+router.get('/userfavorites/:userId', async (req, res) => {
+    const { userId } = req.params;
+    // console.log("User ID:", userId);
+  
+    try {
+      // Find the user by ID and return their favorites
+      const user = await User.findById(userId);
+  
+      if (!user) {
+        return res.status(404).json({ error: 'User not found' });
+      }
+  
+    //   console.log("User Favorites:", user.favorites);
+  
+      res.json({ favorites: user.favorites });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: 'Server error' });
+    }
+  });
+  
 
 // router.post('/manageFavoriteDEL', async(req, res) => {
 //     const { userId, favorites } = req.body;

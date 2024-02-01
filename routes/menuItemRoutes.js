@@ -196,6 +196,30 @@ router.get("/menuitemsinproductcard/:category", async (req, res) => {
   }
 });
 
+router.get("/menuitemsgetproductdetails/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+    // console.log(id)
+    // Validate if the provided ID is a valid MongoDB ObjectId
+    // if (!mongoose.Types.ObjectId.isValid(id)) {
+    //   return res.status(400).json({ msg: 'Invalid ID' });
+    // }
+
+    const menuItems = await MenuItem.findById(id);
+
+    // Check if the product with the given ID exists
+    if (!menuItems) {
+      return res.status(404).json({ msg: 'Product not found' });
+    }
+
+    res.json(menuItems);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Server Error");
+  }
+});
+
+module.exports = router;
 
 router.get("/menuitemsUP/:id", async (req, res) => {
   try {
