@@ -11,8 +11,9 @@ const transporter = nodemailer.createTransport({
   port: 465,
   secure: true,
     auth : {
-        user : "goharchisthi7@gmail.com",
-        pass : "flpm tvlb rdgi ycol",
+        user : "info.restaurantshub@gmail.com",
+        pass : "wdvd mgce nkvo cxug",
+        // pass : "flpm tvlb rdgi ycol",
     }
 })
 
@@ -130,7 +131,7 @@ async function forgotPassword(req, res, next) {
         // console.log("t",resetTokenn)
         
         const options = {
-            from : "goharchisthi7@gmail.com", 
+            from : "info.restaurantshub@gmail.com", 
             to: email, 
             subject: "Reset password", 
             text: message,
