@@ -148,7 +148,7 @@ async function forgotPassword(req, res, next) {
                             success: true,
                             data: "email sent",
                         });
-                console.log(info)
+                // console.log(info)
             }
         })
 
