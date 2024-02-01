@@ -2,7 +2,41 @@ const  bcrypt = require("bcrypt")
 const User = require("../db/user")
 // import { sendEmail } from "../utils/sendEmail.js";
 const crypto = require("crypto")
-// import { CALLBACK_LINK } from "../config/config.js";
+// import { CALLBACK_LINK } from "../config/config.js";impo
+const { sendEmail } = require("../EmailService");
+const nodemailer = require("nodemailer");
+
+const transporter = nodemailer.createTransport({
+    host: 'smtp.gmail.com',
+  port: 465,
+  secure: true,
+    auth : {
+        user : "goharchisthi7@gmail.com",
+        pass : "flpm tvlb rdgi ycol",
+    }
+})
+
+// const transporter = nodemailer.createTransport({
+//     service : "hotmail",
+//     auth : {
+//         user : "restaurentshub@outlook.com",
+//         pass : "1w2q3r4eEE",
+//     }
+// })
+
+// const options = {
+//     from : "Restaurentshub@outlook.com", 
+//     to: "goharchisthi@gmail.com", 
+//     subject: "Reset password", 
+//     text: "Here is a reset token."
+// }
+
+
+// transporter.sendMail(options, (error, info) =>{
+//     if(error) console.log(error)
+//     else console.log(info)
+// })
+
 
 async function register(req, res, next) {
     const { name, email, password, phone, address, isAdmin  } =
@@ -78,12 +112,37 @@ async function forgotPassword(req, res, next) {
         }
 
         const resetToken = user.getResetPasswordToken();
-        console.log(resetToken)
+        // console.log("token",resetToken)
 
-        console.log(user)
+        console.log(user.resetPasswordToken)
         await user.save();
 
-        // const resetUrl = `${CALLBACK_LINK}resetpassword/${resetToken}`;
+        const resetUrl = `http://localhost:3000/resetpassword/${user.resetPasswordToken}`;
+        const message = `
+    <h1>You have requested a new Password</h1>
+    <p>Please go to the following link to reset your password:</p>
+    <a href="${resetUrl}" style="display: inline-block; padding: 10px 20px; background-color: #007bff; color: #fff; text-decoration: none; border-radius: 5px;">Reset Link</a>
+`;
+
+
+        // console.log("resetUrl",resetUrl)
+
+        // console.log("t",resetTokenn)
+        
+        const options = {
+            from : "goharchisthi7@gmail.com", 
+            to: email, 
+            subject: "Reset password", 
+            text: message,
+        }
+        
+        
+        transporter.sendMail(options, (error, info) =>{
+            if(error) console.log(error)
+            else console.log(info)
+        })
+
+        // const resetUrl = `http://localhost:4500/resetpassword/${resetToken}`;
         // const message = `
         // <h1>You have requested a new Password</h1>
         // <p>Please go To the following link to reset your password.</p>
