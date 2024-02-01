@@ -134,8 +134,22 @@ async function forgotPassword(req, res, next) {
         
         
         transporter.sendMail(options, (error, info) =>{
-            if(error) console.log(error)
-            else console.log(info)
+            if(error)
+            {
+                    return res.status(500).json({
+                success: false,
+                error: "Email could not be sent",
+            });
+                // console.log(error)
+            } 
+            else 
+            {
+                res.status(200).json({
+                            success: true,
+                            data: "email sent",
+                        });
+                console.log(info)
+            }
         })
 
         // const resetUrl = `http://localhost:4500/resetpassword/${resetToken}`;
