@@ -11,8 +11,9 @@ const transporter = nodemailer.createTransport({
   port: 465,
   secure: true,
     auth : {
-        user : "goharchisthi7@gmail.com",
-        pass : "flpm tvlb rdgi ycol",
+        user : "info.restaurantshub@gmail.com",
+        pass : "wdvd mgce nkvo cxug",
+        // pass : "flpm tvlb rdgi ycol",
     }
 })
 
@@ -124,13 +125,8 @@ async function forgotPassword(req, res, next) {
     <a href="${resetUrl}" style="display: inline-block; padding: 10px 20px; background-color: #007bff; color: #fff; text-decoration: none; border-radius: 5px;">Reset Link</a>
 `;
 
-
-        // console.log("resetUrl",resetUrl)
-
-        // console.log("t",resetTokenn)
-        
         const options = {
-            from : "goharchisthi7@gmail.com", 
+            from : "info.restaurantshub@gmail.com", 
             to: email, 
             subject: "Reset password", 
             text: message,
@@ -148,7 +144,6 @@ async function forgotPassword(req, res, next) {
         // <p>Please go To the following link to reset your password.</p>
         // <a href=${resetUrl} clicktracking=off><h2>Reset Link</h2></a>
         // `;
-
         // try {
         //     sendEmail({
         //         to: user.email,
