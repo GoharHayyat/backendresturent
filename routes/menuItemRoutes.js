@@ -211,8 +211,31 @@ router.get("/menuitemsgetproductdetails/:id", async(req, res) => {
         if (!menuItems) {
             return res.status(404).json({ msg: 'Product not found' });
         }
+        const descriptionObject = JSON.parse(menuItems.describtion);
 
-        res.json(menuItems);
+        // Check ingredient stock
+        let anyIngredientsLessThanQuantity = false;
+
+        for (const ingredientName in descriptionObject) {
+            const quantityNeeded = descriptionObject[ingredientName];
+
+            // Find the ingredient in the Ingredients collection
+            const ingredient = await Ingredient.findOne({ name: ingredientName });
+
+            if (ingredient) {
+                if (!ingredient || ingredient.tempstock < quantityNeeded) {
+                    anyIngredientsLessThanQuantity = true;
+                    break;
+                }
+            } else {
+                // console.log("no ingredient found");
+            }
+        }
+
+        // Update the 'check' field based on ingredient availability
+        menuItems.check = anyIngredientsLessThanQuantity;
+        res.json(menuItems.toObject());
+        // res.json(menuItems);
     } catch (error) {
         console.error(error);
         res.status(500).send("Server Error");
@@ -373,7 +396,7 @@ router.get("/menuitemsTrending/", async(req, res) => {
                     const ingredient = await Ingredient.findOne({ name: ingredientName });
 
                     // Check if the ingredient exists and if its stock is less than required quantity
-                    if (!ingredient || ingredient.stock < quantityNeeded) {
+                    if (!ingredient || ingredient.tempstock < quantityNeeded) {
                         anyIngredientsLessThanQuantity = true;
                         break;
                     }
@@ -386,7 +409,8 @@ router.get("/menuitemsTrending/", async(req, res) => {
             }
         }));
 
-        res.json(menuItems);
+        res.json(menuItems.slice(0, 6));
+        // res.json(menuItems);
     } catch (error) {
         console.error(error);
         res.status(500).send("Server Error");
