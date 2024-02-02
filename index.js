@@ -18,6 +18,7 @@ app.use("/MainMenu", express.static("MainMenu"));
 app.use("/MenuItems", express.static("MenuItems"));
 app.use("/Ingredient", express.static("Ingredient"));
 app.use("/Restock", express.static("Restock"));
+app.use("/Orders", express.static("Orders"))
 
 //testing
 
@@ -72,6 +73,7 @@ app.use(
 const menuItemRouter = require("./routes/menuItemRoutes");
 const IngredientRouter = require("./routes/Ingredient");
 const RestockRouter = require('./routes/Restock')
+const OrdersRouter = require('./routes/OrderRoutes')
 
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
@@ -197,6 +199,7 @@ app.use(menuItemRouter);
 app.use(IngredientRouter);
 app.use(RestockRouter);
 app.use(authRouter)
+app.use(OrdersRouter)
 
 mongoose.connect(mongoDBURL).then((result) => {
     console.log("connected");
