@@ -100,7 +100,7 @@ async function login(req, res, next) {
 
 async function forgotPassword(req, res, next) {
     const { email } = req.body;
-    console.log(" cnm")
+    // console.log(" cnm")
 
     try {
         const user = await User.findOne({ email });
@@ -115,22 +115,67 @@ async function forgotPassword(req, res, next) {
         const resetToken = user.getResetPasswordToken();
         // console.log("token",resetToken)
 
-        console.log(user.resetPasswordToken)
+        // console.log(user.resetPasswordToken)
         await user.save();
 
-        const resetUrl = `http://localhost:3000/resetpassword/${user.resetPasswordToken}`;
-        const message = `
-    <h1>You have requested a new Password</h1>
-    <p>Please go to the following link to reset your password:</p>
-    <a href="${resetUrl}" style="display: inline-block; padding: 10px 20px; background-color: #007bff; color: #fff; text-decoration: none; border-radius: 5px;">Reset Link</a>
+//         const resetUrl = `http://localhost:3000/resetpassword/${user.resetPasswordToken}`;
+//         const message = `
+//     <h1>You have requested a new Password</h1>
+//     <p>Please go to the following link to reset your password:</p>
+//     <a href="${resetUrl}" style="display: inline-block; padding: 10px 20px; background-color: #007bff; color: #fff; text-decoration: none; border-radius: 5px;">Reset Link</a>
+// `;
+
+//         const options = {
+//             from : "info.restaurantshub@gmail.com", 
+//             to: email, 
+//             subject: "Reset password", 
+//             text: message,
+//         }
+const resetUrl = `http://localhost:3000/resetpassword/${user.resetPasswordToken}`;
+const message = `
+    <html>
+        <head>
+            <style>
+                body {
+                    font-family: 'Arial', sans-serif;
+                    background-color: #f5f5f5;
+                    color: #333;
+                }
+                .container {
+                    max-width: 600px;
+                    margin: 0 auto;
+                    padding: 20px;
+                    background-color: #fff;
+                    border-radius: 10px;
+                    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+                }
+                h1 {
+                    color: #007bff;
+                }
+                p {
+                    font-size: 16px;
+                    line-height: 1.5;
+                }
+            </style>
+        </head>
+        <body>
+            <div class="container">
+                <h1>Password Reset Request</h1>
+                <p>You have requested a new password. Please follow the link below to reset your password:</p>
+                <a href="${resetUrl}" style="display: inline-block; padding: 10px 20px; background-color: #007bff; color: #f8f6f5; text-decoration: none; border-radius: 5px;">Reset Password</a>
+            </div>
+        </body>
+    </html>
 `;
 
-        const options = {
-            from : "info.restaurantshub@gmail.com", 
-            to: email, 
-            subject: "Reset password", 
-            text: message,
-        }
+const options = {
+    from: "info.restaurantshub@gmail.com", 
+    to: email, 
+    subject: "Password Reset Request", 
+    html: message,
+};
+
+
         
         
         transporter.sendMail(options, (error, info) =>{
