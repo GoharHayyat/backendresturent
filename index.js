@@ -1,7 +1,7 @@
 const express = require("express");
 const mongoose = require("mongoose");
-const mongoDBURL = "mongodb://127.0.0.1:27017/controlPanel";
-// const mongoDBURL = "mongodb+srv://ali:pTxnhzNCFGAXTvkH@cluster0.5ss7bm8.mongodb.net/?retryWrites=true&w=majority";
+// const mongoDBURL = "mongodb://127.0.0.1:27017/controlPanel";
+const mongoDBURL = "mongodb+srv://ali:pTxnhzNCFGAXTvkH@cluster0.5ss7bm8.mongodb.net/?retryWrites=true&w=majority";
 const ControlPanel = require("./db/ControlPanel");
 const MenuItem = require("./db/MenuItem");
 const Ingredient = require("./db/IngredientSchema");

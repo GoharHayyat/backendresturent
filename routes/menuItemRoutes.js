@@ -373,7 +373,7 @@ router.get("/menuitemsTrending/", async(req, res) => {
                     const ingredient = await Ingredient.findOne({ name: ingredientName });
 
                     // Check if the ingredient exists and if its stock is less than required quantity
-                    if (!ingredient || ingredient.stock < quantityNeeded) {
+                    if (!ingredient || ingredient.tempstock < quantityNeeded) {
                         anyIngredientsLessThanQuantity = true;
                         break;
                     }
