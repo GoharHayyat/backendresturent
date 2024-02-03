@@ -1,7 +1,10 @@
 const express = require("express");
 const mongoose = require("mongoose");
 // const mongoDBURL = "mongodb://127.0.0.1:27017/controlPanel";
-const mongoDBURL = "mongodb+srv://ali:pTxnhzNCFGAXTvkH@cluster0.5ss7bm8.mongodb.net/?retryWrites=true&w=majority";
+const dotenv = require('dotenv');
+dotenv.config();
+
+const mongoDBURL = process.env.DATABASE_CONNECT;
 const ControlPanel = require("./db/ControlPanel");
 const MenuItem = require("./db/MenuItem");
 const Ingredient = require("./db/IngredientSchema");
@@ -202,6 +205,6 @@ app.use(authRouter)
 app.use(OrdersRouter)
 
 mongoose.connect(mongoDBURL).then((result) => {
-    ("connected");
+    console.log("connected");
     app.listen(4500);
 });
