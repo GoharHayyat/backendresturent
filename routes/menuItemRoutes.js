@@ -38,17 +38,17 @@ router.post("/menuitems", upload.single("image"), async(req, res) => {
 
     const imagePath = `MenuItems/${req.file.filename}`;
 
-    console.log(
-        name,
-        ctitle,
-        menuItemPrice,
-        menuItemDescription,
-        calories,
-        carbohydrates,
-        fats,
-        protein,
-        totalpurchases
-    );
+    // console.log(
+    //     name,
+    //     ctitle,
+    //     menuItemPrice,
+    //     menuItemDescription,
+    //     calories,
+    //     carbohydrates,
+    //     fats,
+    //     protein,
+    //     totalpurchases
+    // );
     // console.log(ctitle);
 
     try {
@@ -75,8 +75,8 @@ router.post("/menuitems", upload.single("image"), async(req, res) => {
             image: imagePath,
             check: false,
         });
-        console.log(typeof menuItem); //  output 'object'
-        console.log(menuItem instanceof MenuItem); //  output true if MEnuITEM is model
+        // console.log(typeof menuItem); //  output 'object'
+        // console.log(menuItem instanceof MenuItem); //  output true if MEnuITEM is model
 
         await menuItem.save();
 

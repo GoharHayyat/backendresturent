@@ -1,7 +1,8 @@
 const express = require("express");
 const mongoose = require("mongoose");
-// const mongoDBURL = "mongodb://127.0.0.1:27017/controlPanel";
-const mongoDBURL = "mongodb+srv://ali:pTxnhzNCFGAXTvkH@cluster0.5ss7bm8.mongodb.net/?retryWrites=true&w=majority";
+const dotenv = require('dotenv');
+dotenv.config();
+const mongoDBURL = process.env.DATABASE_CONNECT;
 const ControlPanel = require("./db/ControlPanel");
 const MenuItem = require("./db/MenuItem");
 const Ingredient = require("./db/IngredientSchema");
@@ -32,7 +33,7 @@ app.use("/Orders", express.static("Orders"))
 
 // router.post('/manageFavorite', async(req, res) => {
 //     const { userId, favorites } = req.body;
-//     console.log(req.body)
+//     (req.body)
 
 //     try {
 //         // Find the user by ID
@@ -120,8 +121,8 @@ app.post("/updateCategory/:id", upload.single("image"), async(req, res) => {
         }
         const prevTitle = controlpanel.title;
         controlpanel.title = title;
-        console.log(prevTitle);
-        console.log(controlpanel.title);
+        (prevTitle);
+        (controlpanel.title);
 
         // console?
         if (req.file) {
@@ -132,7 +133,7 @@ app.post("/updateCategory/:id", upload.single("image"), async(req, res) => {
         res.status(200).json(updatedControlpanel);
 
         const menuItemUpdateResult = await MenuItem.updateMany({ category: prevTitle }, { $set: { category: controlpanel.title } });
-        console.log(menuItemUpdateResult);
+        (menuItemUpdateResult);
     } catch (error) {
         res.status(500).json({ message: "Something went wrong" });
     }
@@ -141,7 +142,7 @@ app.post("/updateCategory/:id", upload.single("image"), async(req, res) => {
 // app.get("/getAllproduct", async (req, resp) => {
 //   resp.setHeader("Access-Control-Allow-Origin", "http://localhost:3000");
 //   const data = await ControlPanel.find();
-//   //   console.log(title);
+//   //   (title);
 
 //   resp.send(data);
 //   //   resp.json(data);
@@ -166,7 +167,7 @@ app.delete("/deleteCategory/:id", async(req, resp) => {
 //   // const id = req.body.id;
 //   // const items = req.body.items;
 //   const { id, items } = req.body;
-//   console.log(id, items);
+//   (id, items);
 
 //   ControlPanel.findByIdAndUpdate(
 //     { _id: id },
@@ -175,7 +176,7 @@ app.delete("/deleteCategory/:id", async(req, resp) => {
 //     }
 //   )
 //     .then((result) => {
-//       console.log(`Item ${id} deleted`, result);
+//       (`Item ${id} deleted`, result);
 //       res.json({ message: "Item deleted successfully" });
 //     })
 //     .catch((err) => {
@@ -202,6 +203,6 @@ app.use(authRouter)
 app.use(OrdersRouter)
 
 mongoose.connect(mongoDBURL).then((result) => {
-    console.log("connected");
+    ("connected");
     app.listen(4500);
 });

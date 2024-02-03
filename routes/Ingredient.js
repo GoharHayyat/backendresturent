@@ -94,7 +94,7 @@ router.put("/ingredients/:id/updateInrestock", async (req, res) => {
   try {
     const productId = req.params.id;
 
-    console.log(productId);
+    // console.log(productId);
     // Find the ingredient by ID
     const ingredient = await Ingredient.findById(productId);
 
@@ -192,7 +192,7 @@ router.put("/ingredients/updatetempstock", async (req, res) => {
     // Assuming the request body is an array of objects
     const ingredientsToUpdate = req.body;
 
-    console.log(ingredientsToUpdate);
+    // console.log(ingredientsToUpdate);
 
     let spaceAvailable = true;
 
@@ -203,39 +203,39 @@ router.put("/ingredients/updatetempstock", async (req, res) => {
 
       if (ingredient) {
         // Ingredient found, you can perform your logic here
-        console.log(`Ingredient found: ${ingredient.name}`);
+        // console.log(`Ingredient found: ${ingredient.name}`);
 
         // Compare the quantity with tempstock
         if (
           ingredientData.quantity > ingredient.tempstock
         ) {
-          console.log(
-            "ingrediant quantity",
-            ingredientData.quantity,
-            "temp stock",
-            ingredient.tempstock
-          );
+          // con/sole.log(
+          //   "ingrediant quantity",
+          //   ingredientData.quantity,
+          //   "temp stock",
+          //   ingredient.tempstock
+          // );
           spaceAvailable = false;
           // console.log(`Not enough space for ${ingredient.name}`);
           return res.status(400).json({ error: "Not enough space." });
           // Your logic when space is not available for the ingredient
         }
         else{
-          console.log(
-            "ingrediant quantity",
-            ingredientData.quantity,
-            "temp stock",
-            ingredient.tempstock
-          );
+          // console.log(
+          //   "ingrediant quantity",
+          //   ingredientData.quantity,
+          //   "temp stock",
+          //   ingredient.tempstock
+          // );
         }
       } else {
         // Ingredient not found, you can skip or handle it accordingly
-        console.log(`Ingredient not found: ${ingredientData.name}`);
+        // console.log(`Ingredient not found: ${ingredientData.name}`);
       }
     }
 
     if (spaceAvailable) {
-      console.log(`Space available for all ingredients`);
+      (`Space available for all ingredients`);
       // Your logic when space is available for all ingredients.
 
       for (const ingredientData of ingredientsToUpdate) {
@@ -251,7 +251,7 @@ router.put("/ingredients/updatetempstock", async (req, res) => {
         }
         else {
           // Ingredient not found, you can skip or handle it accordingly
-          console.log(`Ingredient not found: ${ingredientData.name}`);
+          // console.log(`Ingredient not found: ${ingredientData.name}`);
         }
       }
     } else {
@@ -274,7 +274,7 @@ router.put("/ingredients/cartincreasebutton", async (req, res) => {
     // Assuming the request body is an array of objects
     const ingredientsToUpdate = req.body;
 
-    console.log(ingredientsToUpdate);
+    // console.log(ingredientsToUpdate);
 
     // let spaceAvailable = true;
 
@@ -289,7 +289,7 @@ router.put("/ingredients/cartincreasebutton", async (req, res) => {
           const updatedIngredient = await ingredient.save();
       } else {
         // Ingredient not found, you can skip or handle it accordingly
-        console.log(`Ingredient not found: ${ingredientData.name}`);
+        // console.log(`Ingredient not found: ${ingredientData.name}`);
       }
     }
 

@@ -7,6 +7,7 @@ const orderSchema = new mongoose.Schema({
     orderDate: { type: Date, default: Date.now }, // Date and time of ordering
     onlinePayment: { type: Boolean, default: false }, // Online payment status
     tableNo: { type: String, default: null },
+    invoiceid: { type: String, required: true },
 });
 
 const Order = mongoose.model('Orders', orderSchema);

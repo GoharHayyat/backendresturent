@@ -11,7 +11,7 @@ router.post('/restock', async (req, res) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
   try {
     const orderData = req.body.orderData; // Assuming orderData is sent in the request body
-    console.log(orderData);
+    // console.log(orderData);
 
     // Create a new order instance
     const newOrder = new Restock({
@@ -24,7 +24,7 @@ router.post('/restock', async (req, res) => {
     // Save the order to the database
     await newOrder.save();
 
-    console.log('Order data stored in the database');
+    // console.log('Order data stored in the database');
 
     // Send a success response
     res.status(200).json({ success: true });
@@ -38,7 +38,7 @@ router.post('/normalrestock', async (req, res) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
   try {
     const orderData = req.body.orderData; // Assuming orderData is sent in the request body
-    console.log(orderData);
+    // console.log(orderData);
 
     // Create a new order instance
     const newOrder = new Restock({
@@ -51,7 +51,7 @@ router.post('/normalrestock', async (req, res) => {
     // Save the order to the database
     await newOrder.save();
 
-    console.log('Order data stored in the database');
+    // console.log('Order data stored in the database');
 
     // Send a success response
     res.status(200).json({ success: true });
@@ -128,7 +128,7 @@ router.put("/restockstatus/:id/", async (req, res) => {
     const productId = req.params.id;
     const newStatus = req.body.status;  // Assuming you send the new status in the request body
 
-    console.log(productId, newStatus);
+    // console.log(productId, newStatus);
 
     // Find the restock item by ID
     const restock = await Restock.findById(productId);
