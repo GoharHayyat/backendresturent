@@ -27,7 +27,7 @@ const transporter = nodemailer.createTransport({
 
 router.post("/orders", async (req, res) => {
   try {
-    const { userId, products, totalPrice } = req.body;
+    const { userId, products, totalPrice, tableNo  } = req.body;
     // console.log(req.body);
 
     const user = await User.findById(userId);
@@ -239,11 +239,11 @@ router.post("/orders", async (req, res) => {
     const options = {
       from: "info.restaurantshub@gmail.com",
       to: user.email,
-      subject: "Password Reset Request",
+      subject: "Order Invoice",
       html: htmlTemplate,
     };
 
-    await transporter.sendMail(options, (error, info) => {
+    transporter.sendMail(options, (error, info) => {
       if (error) {
         return res.status(500).json({
           success: false,
@@ -259,7 +259,7 @@ router.post("/orders", async (req, res) => {
       }
     });
 
-    const order = new Orders({ userId, products, totalPrice, invoiceid });
+    const order = new Orders({ userId, products, totalPrice, invoiceid,tableNo });
 
     await order.save();
 
