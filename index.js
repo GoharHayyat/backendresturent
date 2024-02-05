@@ -77,6 +77,7 @@ const menuItemRouter = require("./routes/menuItemRoutes");
 const IngredientRouter = require("./routes/Ingredient");
 const RestockRouter = require('./routes/Restock')
 const OrdersRouter = require('./routes/OrderRoutes')
+const qrCodeRouter = require('./routes/qrgenrate');
 
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
@@ -203,7 +204,7 @@ app.use(IngredientRouter);
 app.use(RestockRouter);
 app.use(authRouter)
 app.use(OrdersRouter)
-
+app.use(qrCodeRouter)
 mongoose.connect(mongoDBURL).then((result) => {
     console.log("connected");
     app.listen(4500);
