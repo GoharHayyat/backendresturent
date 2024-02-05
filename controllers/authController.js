@@ -121,7 +121,7 @@ async function forgotPassword(req, res, next) {
 
         // console.log(user.resetPasswordToken)
         await user.save();
-const resetUrl = `http://localhost:3000/resetpassword/${user.resetPasswordToken}`;
+const resetUrl = `${process.env.RESET_PASSWORD_ADRRESS}/resetpassword/${user.resetPasswordToken}`;
 const message = `
 <html>
 <head>
