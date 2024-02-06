@@ -8,28 +8,26 @@ router.post('/book', async(req, res) => {
     try {
         console.log('Received POST request to /book:', req.body);
 
-        const { slot, date } = req.body;
+        const { slot, date, name, email, phone, noOfPersons } = req.body;
+
 
         // Check if the slot is already booked for the selected date
-        const existingBooking = await Reservation.findOne({ 'bookings.date': date, 'bookings.slot': slot });
+        const existingBooking = await Reservation.findOne({ date, slot });
 
         if (existingBooking) {
             console.log('Slot already booked for the selected date');
             return res.status(400).json({ error: 'Slot already booked for the selected date' });
         }
 
-        // Fetch the reservation document
-        let reservation = await Reservation.findOne({});
-
-        // Ensure 'bookings' field is an array
-        if (!reservation) {
-            reservation = new Reservation({ bookings: [] });
-        } else if (!Array.isArray(reservation.bookings)) {
-            reservation.bookings = [];
-        }
-
-        // Add the booking to the reservation
-        reservation.bookings.push({ slot, date });
+        // Create a new reservation document
+        const reservation = new Reservation({
+            slot,
+            date,
+            name,
+            email,
+            phone,
+            noOfPersons
+        });
         await reservation.save();
 
         console.log('Booking successful');
@@ -45,8 +43,8 @@ router.get('/availability', async(req, res) => {
     const { date } = req.query;
 
     try {
-        const reservations = await Reservation.find({ 'bookings.date': new Date(date) });
-        const bookedSlots = reservations.flatMap(reservation => reservation.bookings.map(booking => booking.slot));
+        const reservations = await Reservation.find({ date: new Date(date) });
+        const bookedSlots = reservations.map(reservation => reservation.slot);
         const allSlots = [1, 2, 3, 4, 5, 6]; // Assuming total 6 slots available
         const availableSlots = allSlots.filter(slot => !bookedSlots.includes(slot));
         res.json({ availableSlots });
@@ -55,4 +53,5 @@ router.get('/availability', async(req, res) => {
         res.status(500).json({ error: 'Error fetching availability' });
     }
 });
+
 module.exports = router;
