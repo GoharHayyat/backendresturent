@@ -8,6 +8,7 @@ const orderSchema = new mongoose.Schema({
     onlinePayment: { type: Boolean, default: false }, // Online payment status
     tableNo: { type: Object, required: true },
     invoiceid: { type: String, required: true },
+    orderstatus: { type: String, default: "pending" },
 });
 
 const Order = mongoose.model('Orders', orderSchema);
