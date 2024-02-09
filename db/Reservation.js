@@ -17,10 +17,7 @@ const reservationSchema = new mongoose.Schema({
     noOfPersons: {
         type: String,
     },
-    slotTime: {
-        type: String,
-        required: true
-    },
+    slot: { type: Number, required: true },
     date: {
         type: Date,
         required: true
