@@ -36,7 +36,7 @@ router.post("/menuitems", upload.single("image"), async(req, res) => {
         totalpurchases,
     } = req.body;
 
-    const imagePath = `MenuItems/${req.file.filename}`;
+    const imagePath = `MenuItems / ${ req.file.filename}`;
 
     // console.log(
     //     name,

@@ -8,11 +8,11 @@ router.post('/book', async(req, res) => {
     try {
         console.log('Received POST request to /book:', req.body);
 
-        const { slot, date, name, email, phone, noOfPersons } = req.body;
+        const { slotTime, date, name, email, phone, noOfPersons } = req.body;
 
 
         // Check if the slot is already booked for the selected date
-        const existingBooking = await Reservation.findOne({ date, slot });
+        const existingBooking = await Reservation.findOne({ date, slotTime });
 
         if (existingBooking) {
             console.log('Slot already booked for the selected date');
@@ -21,7 +21,7 @@ router.post('/book', async(req, res) => {
 
         // Create a new reservation document
         const reservation = new Reservation({
-            slot,
+            slotTime,
             date,
             name,
             email,

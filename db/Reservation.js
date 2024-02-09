@@ -3,12 +3,12 @@ const mongoose = require('mongoose');
 const reservationSchema = new mongoose.Schema({
     name: {
         type: String,
-        // required: true
+        required: true
     },
     email: {
         type: String,
-        // required: true,
-        // unique: true
+        required: true,
+        unique: true
     },
 
     phone: {
@@ -17,8 +17,8 @@ const reservationSchema = new mongoose.Schema({
     noOfPersons: {
         type: String,
     },
-    slot: {
-        type: Number,
+    slotTime: {
+        type: String,
         required: true
     },
     date: {
