@@ -38,7 +38,7 @@ router.post('/book', async(req, res) => {
     }
 });
 
-
+//test
 router.get('/availability', async(req, res) => {
     const { date } = req.query;
 
