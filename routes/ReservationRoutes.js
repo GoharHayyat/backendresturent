@@ -8,11 +8,11 @@ router.post('/book', async(req, res) => {
     try {
         console.log('Received POST request to /book:', req.body);
 
-        const { slotTime, date, name, email, phone, noOfPersons } = req.body;
+        const { slot, date, name, email, phone, noOfPersons } = req.body;
 
 
         // Check if the slot is already booked for the selected date
-        const existingBooking = await Reservation.findOne({ date, slotTime });
+        const existingBooking = await Reservation.findOne({ date, slot });
 
         if (existingBooking) {
             console.log('Slot already booked for the selected date');
@@ -21,7 +21,7 @@ router.post('/book', async(req, res) => {
 
         // Create a new reservation document
         const reservation = new Reservation({
-            slotTime,
+            slot,
             date,
             name,
             email,
@@ -38,13 +38,15 @@ router.post('/book', async(req, res) => {
     }
 });
 
-//test
+
+
+
 router.get('/availability', async(req, res) => {
     const { date } = req.query;
 
     try {
         const reservations = await Reservation.find({ date: new Date(date) });
-        const bookedSlots = reservations.map(reservation => reservation.slot);
+        const bookedSlots = reservations.map(reservation => parseInt(reservation.slot)); // Parse slot as integer
         const allSlots = [1, 2, 3, 4, 5, 6]; // Assuming total 6 slots available
         const availableSlots = allSlots.filter(slot => !bookedSlots.includes(slot));
         res.json({ availableSlots });
@@ -53,5 +55,10 @@ router.get('/availability', async(req, res) => {
         res.status(500).json({ error: 'Error fetching availability' });
     }
 });
+
+
+
+
+
 
 module.exports = router;
