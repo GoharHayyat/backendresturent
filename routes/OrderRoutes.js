@@ -272,18 +272,40 @@ router.post("/orders", async(req, res) => {
   }
 });
 
-router.get('/getorder/:userId', async(req, res) => {
+// router.get('/getorder/:userId', async(req, res) => {
+//     try {
+//         const userId = req.params.userId;
+//         console.log(userId)
+
+//         // Find orders by user ID
+//         const orders = await Orders.find({ userId });
+//         console.log('Orders found:', orders);
+
+//         if (!orders) {
+//             return res.status(404).json({ message: 'No orders found for the specified user' });
+//         }
+
+//         res.status(200).json({ orders });
+//     } catch (error) {
+//         console.error('Error retrieving orders:', error);
+//         res.status(500).json({ message: 'Failed to retrieve orders' });
+//     }
+// });
+router.get('/getorder/:userId', async (req, res) => {
     try {
         const userId = req.params.userId;
         console.log(userId)
 
-        // Find orders by user ID
-        const orders = await Orders.find({ userId });
+        // Find orders by user ID, sort by creation date in descending order, and limit to 5
+        let orders = await Orders.find({ userId }).sort({ createdAt: -1 }).limit(5);
         console.log('Orders found:', orders);
 
-        if (!orders) {
+        if (!orders || orders.length === 0) {
             return res.status(404).json({ message: 'No orders found for the specified user' });
         }
+
+        // Reverse the order of the array
+        orders = orders.reverse();
 
         res.status(200).json({ orders });
     } catch (error) {
@@ -291,6 +313,7 @@ router.get('/getorder/:userId', async(req, res) => {
         res.status(500).json({ message: 'Failed to retrieve orders' });
     }
 });
+
 
 
 router.get("/allorders", async (req, res) => {
