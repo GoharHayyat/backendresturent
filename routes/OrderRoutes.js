@@ -15,49 +15,49 @@ dotenv.config();
 const nodemailer = require("nodemailer");
 
 const transporter = nodemailer.createTransport({
-  host: "smtp.gmail.com",
-  port: 465,
-  secure: true,
-  auth: {
-    user: process.env.EMAIL_FROM,
-    pass: process.env.EMAIL_PASSWORD,
-    // pass : "flpm tvlb rdgi ycol",
-  },
+    host: "smtp.gmail.com",
+    port: 465,
+    secure: true,
+    auth: {
+        user: process.env.EMAIL_FROM,
+        pass: process.env.EMAIL_PASSWORD,
+        // pass : "flpm tvlb rdgi ycol",
+    },
 });
 
-router.post("/orders", async (req, res) => {
-  try {
-    const { userId, products, totalPrice, tableNo  } = req.body;
-    // console.log(req.body);
+router.post("/orders", async(req, res) => {
+            try {
+                const { userId, products, totalPrice, tableNo } = req.body;
+                // console.log(req.body);
 
-    const user = await User.findById(userId);
+                const user = await User.findById(userId);
 
-    if (!user) {
-      return res.status(404).json({
-        success: false,
-        error: "User not Found",
-      });
-    }
+                if (!user) {
+                    return res.status(404).json({
+                        success: false,
+                        error: "User not Found",
+                    });
+                }
 
-    const characters =
-      "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-    let invoiceid = "";
+                const characters =
+                    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+                let invoiceid = "";
 
-    for (let i = 0; i < 20; i++) {
-      const randomIndex = Math.floor(Math.random() * characters.length);
-      invoiceid += characters.charAt(randomIndex);
-    }
-    const currentDate = new Date();
-    const year = currentDate.getFullYear();
-    const month = currentDate.getMonth() + 1; // Months are zero-based, so add 1
-    const day = currentDate.getDate();
-    const formattedDate = `${day < 10 ? "0" : ""}${day}-${
+                for (let i = 0; i < 20; i++) {
+                    const randomIndex = Math.floor(Math.random() * characters.length);
+                    invoiceid += characters.charAt(randomIndex);
+                }
+                const currentDate = new Date();
+                const year = currentDate.getFullYear();
+                const month = currentDate.getMonth() + 1; // Months are zero-based, so add 1
+                const day = currentDate.getDate();
+                const formattedDate = `${day < 10 ? "0" : ""}${day}-${
       month < 10 ? "0" : ""
     }${month}-${year}`;
 
-    
 
-    const htmlTemplate = `
+
+                const htmlTemplate = `
         <html>
         <head>
             <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
@@ -272,28 +272,26 @@ router.post("/orders", async (req, res) => {
   }
 });
 
-// router.get('/getorder/:userId', async(req, res) => {
-//     try {
-//         const userId = req.params.userId;
-//         console.log(userId)
+router.get('/getorder/:userId', async(req, res) => {
+    try {
+        const userId = req.params.userId;
+        console.log(userId)
 
-//         // Find orders by user ID
-//         const orders = await Orders.find({ userId });
-//         console.log('Orders found:', orders);
+        // Find orders by user ID
+        const orders = await Orders.find({ userId });
+        console.log('Orders found:', orders);
 
-//         if (!orders) {
-//             return res.status(404).json({ message: 'No orders found for the specified user' });
-//         }
+        if (!orders) {
+            return res.status(404).json({ message: 'No orders found for the specified user' });
+        }
 
-//         res.status(200).json({ orders });
-//     } catch (error) {
-//         console.error('Error retrieving orders:', error);
-//         res.status(500).json({ message: 'Failed to retrieve orders' });
-//     }
-// });
-//test
-//testing
-//test2
+        res.status(200).json({ orders });
+    } catch (error) {
+        console.error('Error retrieving orders:', error);
+        res.status(500).json({ message: 'Failed to retrieve orders' });
+    }
+});
+
 
 router.get("/allorders", async (req, res) => {
   try {
