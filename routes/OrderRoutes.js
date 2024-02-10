@@ -152,7 +152,7 @@ router.post("/orders", async (req, res) => {
                                                         <table width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;" >
                                                             <tr>
                                                                 <td valign="middle" style="word-break:break-word;font-family:'Inter', Helvetica, Arial, sans-serif;font-size:16px;line-height:24px;" >
-                                                                    <h3 style="margin-top:0;color:#111111;font-size:18px;line-height:26px;font-weight:600;margin-bottom:24px;" >${invoiceid}</h3>
+                                                                    <h3 style="margin-top:0;color:#111111;font-size:18px;line-height:26px;font-weight:600;margin-bottom:24px;" >${tableNo.tableId}</h3>
                                                                 </td>
                                                                 <td align="right" valign="middle" style="word-break:break-word;font-family:'Inter', Helvetica, Arial, sans-serif;font-size:16px;line-height:24px;" >
                                                                     <h3 style="margin-top:0;color:#111111;font-size:18px;line-height:26px;font-weight:600;margin-bottom:24px;" >${formattedDate}</h3>
@@ -303,5 +303,27 @@ router.get("/allorders", async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 });
+
+router.put('/updatetheOrderStatus/:orderId', async (req, res) => {
+    const { orderStatus } = req.body;
+    const { orderId } = req.params;
+  
+    try {
+      // Find the order by ID and update the orderStatus
+      const updatedOrder = await Orders.findByIdAndUpdate(
+        orderId,
+        { $set: { orderstatus: orderStatus } },
+        { new: true } // To get the updated document as the result
+      );
+  
+      if (!updatedOrder) {
+        return res.status(404).json({ message: 'Order not found' });
+      }
+  
+      res.json(updatedOrder);
+    } catch (error) {
+      res.status(500).json({ message: error.message });
+    }
+  });
 
 module.exports = router;
