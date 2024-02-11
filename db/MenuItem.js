@@ -28,8 +28,9 @@ const menuitemSchema = new Schema({
     type: String,
   },
   totalpurchases: {
-    type: String,
-  },
+    type: Number,
+    default: 0,
+},
   image: {
     type: String,
     required: true,
