@@ -31,6 +31,44 @@ router.post('/verifycoupon', async(req, res) => {
             }
 
             // Update the coupon status only if Reservation is true and the coupon is used on the given date
+            // couponn.Active = false;
+            await couponn.save();
+        }
+
+        res.json({ success: true, message: 'Coupon verified successfully' });
+    } catch (error) {
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
+
+router.post('/verifycouponupdate', async(req, res) => {
+    try {
+        const { coupon } = req.body;
+        console.log("Received coupon:", coupon); // Log the received coupon
+
+        // Find the coupon in the database
+        const couponn = await Coupon.findOne({ coupon: coupon });
+
+        if (!couponn) {
+            return res.status(404).json({ error: 'Coupon not found' });
+        }
+
+        if (!couponn.Active) {
+            return res.status(400).json({ error: 'Coupon has already been used' });
+        }
+
+        // Check if Reservation is true and if the coupon is used on the given date
+        if (couponn.Reservation) {
+            const currentDate = new Date();
+            const couponDate = new Date(couponn.date);
+
+            // Check if the current date is equal to the coupon date
+            if (currentDate.toDateString() !== couponDate.toDateString()) {
+                return res.status(400).json({ error: 'Coupon can only be used on the given date' });
+            }
+
+            // Update the coupon status only if Reservation is true and the coupon is used on the given date
             couponn.Active = false;
             await couponn.save();
         }
