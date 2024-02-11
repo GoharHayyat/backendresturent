@@ -21,7 +21,10 @@ const reservationSchema = new mongoose.Schema({
     date: {
         type: Date,
         required: true
-    }
+    },
+    coupon: {
+        type: String,
+    },
 });
 
 module.exports = mongoose.model('Reservation', reservationSchema);

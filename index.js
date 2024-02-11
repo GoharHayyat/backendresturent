@@ -23,6 +23,7 @@ app.use("/Ingredient", express.static("Ingredient"));
 app.use("/Restock", express.static("Restock"));
 app.use("/Orders", express.static("Orders"))
 app.use("/Reservation", express.static("Reservation"))
+app.use("/Coupon", express.static("Coupon"))
 
 
 //testing
@@ -81,6 +82,7 @@ const RestockRouter = require('./routes/Restock')
 const OrdersRouter = require('./routes/OrderRoutes')
 const qrCodeRouter = require('./routes/qrgenrate');
 const ReservationRouter = require('./routes/ReservationRoutes')
+const CouponRouter = require('./routes/CouponRoutes')
 
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
@@ -209,6 +211,7 @@ app.use(authRouter)
 app.use(OrdersRouter)
 app.use(qrCodeRouter)
 app.use(ReservationRouter)
+app.use(CouponRouter)
 
 
 

@@ -1,8 +1,8 @@
-const  bcrypt = require("bcrypt")
+const bcrypt = require("bcrypt")
 const User = require("../db/user")
-// import { sendEmail } from "../utils/sendEmail.js";
+    // import { sendEmail } from "../utils/sendEmail.js";
 const crypto = require("crypto")
-// const { EMAIL_FROM, EMAIL_PASSWORD } = require("../config/config");
+    // const { EMAIL_FROM, EMAIL_PASSWORD } = require("../config/config");
 const nodemailer = require("nodemailer");
 const dotenv = require('dotenv');
 dotenv.config();
@@ -14,11 +14,11 @@ const transporter = nodemailer.createTransport({
     port: 465,
     secure: true,
     auth: {
-      user: process.env.EMAIL_FROM,
-      pass: process.env.EMAIL_PASSWORD,
-      // pass : "flpm tvlb rdgi ycol",
+        user: process.env.EMAIL_FROM,
+        pass: process.env.EMAIL_PASSWORD,
+        // pass : "flpm tvlb rdgi ycol",
     },
-  });
+});
 
 // const transporter = nodemailer.createTransport({
 //     service : "hotmail",
@@ -43,8 +43,8 @@ const transporter = nodemailer.createTransport({
 
 
 async function register(req, res, next) {
-    const { name, email, password, phone, address, isAdmin  } =
-        req.body;
+    const { name, email, password, phone, address, isAdmin } =
+    req.body;
 
     try {
         const user = await User.create({
@@ -52,7 +52,7 @@ async function register(req, res, next) {
             email,
             password,
             isAdmin,
-            
+
             address,
             phone,
         });
@@ -121,8 +121,8 @@ async function forgotPassword(req, res, next) {
 
         // console.log(user.resetPasswordToken)
         await user.save();
-const resetUrl = `${process.env.RESET_PASSWORD_ADRRESS}/resetpassword/${user.resetPasswordToken}`;
-const message = `
+        const resetUrl = `${process.env.RESET_PASSWORD_ADRRESS}/resetpassword/${user.resetPasswordToken}`;
+        const message = `
 <html>
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
@@ -264,31 +264,28 @@ const message = `
 </html>
 `;
 
-const options = {
-    from: "info.restaurantshub@gmail.com", 
-    to: email, 
-    subject: "Password Reset Request", 
-    html: message,
-};
+        const options = {
+            from: "info.restaurantshub@gmail.com",
+            to: email,
+            subject: "Password Reset Request",
+            html: message,
+        };
 
 
-        
-        
-        transporter.sendMail(options, (error, info) =>{
-            if(error)
-            {
-                    return res.status(500).json({
-                success: false,
-                error: "Email could not be sent",
-            });
+
+
+        transporter.sendMail(options, (error, info) => {
+            if (error) {
+                return res.status(500).json({
+                    success: false,
+                    error: "Email could not be sent",
+                });
                 // console.log(error)
-            } 
-            else 
-            {
+            } else {
                 res.status(200).json({
-                            success: true,
-                            data: "email sent",
-                        });
+                    success: true,
+                    data: "Email sent",
+                });
                 // console.log(info)
             }
         })
@@ -332,21 +329,21 @@ async function resetPassword(req, res, next) {
     //     .update(req.params.resetToken)
     //     .digest("hex");
 
-        // console.log("cd",resetPasswordToken)
+    // console.log("cd",resetPasswordToken)
 
     try {
         const user = await User.findOne({
             resetPasswordToken: req.params.resetToken,
             // resetPasswordExpire: { $gt: Date.now() },
-          });
-    //    console.log(user)
+        });
+        //    console.log(user)
         if (!user) {
             return res.status(400).json({
-                success:false,
-                error:"Invalid Reset Token"
+                success: false,
+                error: "Invalid Reset Token"
             });
         }
-        
+
         user.password = req.body.password;
         user.resetPasswordExpire = undefined;
         user.resetPasswordToken = undefined;
@@ -354,14 +351,14 @@ async function resetPassword(req, res, next) {
         await user.save();
 
         return res.status(201).json({
-            success:true,
+            success: true,
             data: "password changed Successfully",
             token: user.getSignedToken()
         })
 
     } catch (error) {
         next(error);
-     }
+    }
 }
 
 // This funtions us used to send back response and to avoid repetition of code in loging and register routes
@@ -370,7 +367,7 @@ const sendToken = (user, statusCode, res) => {
     res.status(statusCode).json({
         success: true,
         token,
-        favorites:user,
+        favorites: user,
     });
 };
-module.exports = {register,login,forgotPassword,resetPassword};
+module.exports = { register, login, forgotPassword, resetPassword };
