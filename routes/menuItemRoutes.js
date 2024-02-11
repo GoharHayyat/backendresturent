@@ -423,4 +423,40 @@ router.get("/menuitemsTrending/", async(req, res) => {
 });
 
 
+
+
+
+router.post("/updateTotalPurchases", async (req, res) => {
+    try {
+        const purchaseData = req.body;
+
+        console.log(purchaseData)
+        // Assuming your MenuItem model has a field named 'name'
+        for (const purchase of purchaseData) {
+            const { name, quantity } = purchase;
+
+            // Find the menu item by name
+            let menuItem = await MenuItem.findOne({ title: name });
+
+            if (!menuItem) {
+                return res.status(404).json({ msg: `Menu item '${name}' not found` });
+            }
+
+            menuItem.totalpurchases += parseInt(quantity, 10);
+            
+
+            // Save the updated menu item
+            menuItem = await menuItem.save();
+        }
+
+        res.json({ msg: "Total purchases updated successfully" });
+    } catch (error) {
+        console.error(error);
+        res.status(500).send("Server Error");
+    }
+});
+
+
+
+
 module.exports = router;

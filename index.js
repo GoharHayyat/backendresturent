@@ -1,6 +1,5 @@
 const express = require("express");
 const mongoose = require("mongoose");
-// const mongoDBURL = "mongodb://127.0.0.1:27017/controlPanel";
 const dotenv = require('dotenv');
 dotenv.config();
 
@@ -16,7 +15,6 @@ const multer = require("multer");
 const fs = require("fs");
 const path = require("path");
 const router = express.Router();
-// app.use(express.static("MainMenu"));
 app.use("/MainMenu", express.static("MainMenu"));
 app.use("/MenuItems", express.static("MenuItems"));
 app.use("/Ingredient", express.static("Ingredient"));

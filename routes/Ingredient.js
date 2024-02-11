@@ -193,6 +193,7 @@ router.put("/ingredients/updatetempstock", async (req, res) => {
     const ingredientsToUpdate = req.body;
 
     // console.log(ingredientsToUpdate);
+    // console.log(ingredientsToUpdate);
 
     let spaceAvailable = true;
 
@@ -206,9 +207,7 @@ router.put("/ingredients/updatetempstock", async (req, res) => {
         // console.log(`Ingredient found: ${ingredient.name}`);
 
         // Compare the quantity with tempstock
-        if (
-          ingredientData.quantity > ingredient.tempstock
-        ) {
+        if (ingredientData.quantity > ingredient.tempstock) {
           // con/sole.log(
           //   "ingrediant quantity",
           //   ingredientData.quantity,
@@ -219,8 +218,7 @@ router.put("/ingredients/updatetempstock", async (req, res) => {
           // console.log(`Not enough space for ${ingredient.name}`);
           return res.status(400).json({ error: "Not enough space." });
           // Your logic when space is not available for the ingredient
-        }
-        else{
+        } else {
           // console.log(
           //   "ingrediant quantity",
           //   ingredientData.quantity,
@@ -235,7 +233,7 @@ router.put("/ingredients/updatetempstock", async (req, res) => {
     }
 
     if (spaceAvailable) {
-      (`Space available for all ingredients`);
+      `Space available for all ingredients`;
       // Your logic when space is available for all ingredients.
 
       for (const ingredientData of ingredientsToUpdate) {
@@ -244,19 +242,23 @@ router.put("/ingredients/updatetempstock", async (req, res) => {
         });
 
         if (ingredient) {
-          ingredient.tempstock = Math.max((ingredient.tempstock || 0) - ingredientData.quantity, 0);
+          ingredient.tempstock = Math.max(
+            (ingredient.tempstock || 0) - ingredientData.quantity,
+            0
+          );
           // Save the updated ingredient to the database
           const updatedIngredient = await ingredient.save();
           // console.log(updatedIngredient)
-        }
-        else {
+        } else {
           // Ingredient not found, you can skip or handle it accordingly
           // console.log(`Ingredient not found: ${ingredientData.name}`);
         }
       }
     } else {
       // console.log(`Not enough space for all ingredients`);
-      return res.status(400).json({ error: "Not enough space for all ingredients" });
+      return res
+        .status(400)
+        .json({ error: "Not enough space for all ingredients" });
       // Your logic when space is not available for all ingredients
     }
     // Send a response
@@ -284,9 +286,12 @@ router.put("/ingredients/cartincreasebutton", async (req, res) => {
       });
 
       if (ingredient) {
-        ingredient.tempstock = Math.max((ingredient.tempstock || 0) + ingredientData.quantity, 0);
-          // Save the updated ingredient to the database
-          const updatedIngredient = await ingredient.save();
+        ingredient.tempstock = Math.max(
+          (ingredient.tempstock || 0) + ingredientData.quantity,
+          0
+        );
+        // Save the updated ingredient to the database
+        const updatedIngredient = await ingredient.save();
       } else {
         // Ingredient not found, you can skip or handle it accordingly
         // console.log(`Ingredient not found: ${ingredientData.name}`);
@@ -300,8 +305,6 @@ router.put("/ingredients/cartincreasebutton", async (req, res) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
-
-
 
 const mongoose = require("mongoose");
 const ObjectId = mongoose.Types.ObjectId;
@@ -330,5 +333,87 @@ router.get("/ingredientsdetails/:id", async (req, res) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
+
+// router.put("/ingredients/updateorignalstock", async (req, res) => {
+//   res.setHeader("Access-Control-Allow-Origin", "*");
+
+//   try {
+//     // Assuming the request body is an array of objects
+//     const ingredientsToUpdate = req.body;
+
+//     console.log(ingredientsToUpdate);
+
+//     for (const ingredientData of ingredientsToUpdate) {
+//       const ingredient = await Ingredient.findOne({
+//         name: ingredientData.name,
+//       });
+
+//       if (ingredient) {
+//         // Ensure ingredientData.quantityy is a valid number
+//         const quantity = parseInt(ingredientData.quantityy);
+        
+//         // Check if quantity is a valid number
+//         if (!isNaN(quantity)) {
+//           ingredient.stock = Math.max((ingredient.stock || 0) - quantity, 0);
+//           // Save the updated ingredient to the database
+          
+//           await ingredient.save();
+//           res.status(200).json({ message: "Update successful" });
+//           // res.status(200).json({ message: "Ingredient stock updated successfully" });
+
+//         } else {
+//           // Handle the case where quantity is not a valid number
+//           console.log(`Invalid quantity for ingredient: ${ingredientData.name}`);
+//         }
+//       } else {
+//         // Ingredient not found, you can skip or handle it accordingly
+//         console.log(`Ingredient not found: ${ingredientData.name}`);
+//       }
+
+//     }
+//   } catch (error) {
+//     console.error(error);
+//     res.status(500).json({ error: "Internal Server Error" });
+//   }
+// });
+
+router.put("/ingredients/updateorignalstock", async (req, res) => {
+  res.setHeader("Access-Control-Allow-Origin", "*");
+
+  try {
+    // Assuming the request body is an array of objects
+    const ingredientsToUpdate = req.body;
+
+    console.log(ingredientsToUpdate);
+
+    for (const ingredientData of ingredientsToUpdate) {
+      const ingredient = await Ingredient.findOne({
+        name: ingredientData.name,
+      });
+
+      if (ingredient) {
+        const quantity = parseInt(ingredientData.quantityy);
+
+        if (!isNaN(quantity)) {
+          ingredient.stock = Math.max((ingredient.stock || 0) - quantity, 0);
+          await ingredient.save();
+        } else {
+          console.log(`Invalid quantity for ingredient: ${ingredientData.name}`);
+        }
+      } else {
+        console.log(`Ingredient not found: ${ingredientData.name}`);
+      }
+    }
+
+    // After the loop is complete, send a response to the client
+    res.status(200).json({ message: "Ingredient stock updated successfully" });
+  } catch (error) {
+    console.error(error);
+
+    // Ensure that only one response is sent, handle the error appropriately
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
 
 module.exports = router;
