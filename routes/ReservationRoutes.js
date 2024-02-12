@@ -128,6 +128,47 @@ router.get('/availability', async(req, res) => {
 
 
 
+router.get('/reservations', async(req, res) => {
+    try {
+        // Query the Reservation collection to get all reservations
+        const reservations = await Reservation.find();
 
+        // Send the retrieved reservations as a response
+        res.json(reservations);
+    } catch (error) {
+        // If an error occurs, send a 500 status with the error message
+        res.status(500).json({ error: error.message });
+    }
+});
+
+router.get('/filters', async(req, res) => {
+    try {
+        let { fromDate, toDate, email, name, phone } = req.query;
+        let filters = {};
+
+        // Convert filter values to lowercase for case-insensitive matching
+        email = email ? email.toLowerCase() : '';
+        name = name ? name.toLowerCase() : '';
+        phone = phone ? phone.toLowerCase() : '';
+
+        // Add date range filter if fromDate and toDate are provided
+        if (fromDate && toDate) {
+            filters.date = { $gte: fromDate, $lte: toDate };
+        }
+
+        // Add other filters if provided
+        if (email) filters.email = { $regex: email, $options: 'i' }; // Case-insensitive regex
+        if (name) filters.name = { $regex: name, $options: 'i' }; // Case-insensitive regex
+        if (phone) filters.phone = { $regex: phone, $options: 'i' }; // Case-insensitive regex
+
+        // Fetch reservations based on filters
+        const reservations = await Reservation.find(filters);
+
+        res.json(reservations);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
 
 module.exports = router;

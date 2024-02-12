@@ -375,18 +375,35 @@ router.put("/menuitemsupdate/:id", upload.single("image"), async(req, res) => {
 router.get("/menuitemsTrending/", async(req, res) => {
     try {
         // Check if there are items with non-zero total purchases
-        const nonZeroPurchasesCount = await MenuItem.countDocuments({
-            totalpurchases: { $gt: 0 },
-        });
+        // const nonZeroPurchasesCount = await MenuItem.countDocuments({
+        //     totalpurchases: { $gt: 0 },
+        // });
 
-        let menuItems;
+        // let menuItems;
+        // if (nonZeroPurchasesCount > 0) {
+        //     // If there are items with non-zero total purchases, sort by total purchases
+        //     menuItems = await MenuItem.find().sort({ totalpurchases: -1 });
+        // } else {
+        //     // If all items have zero total purchases, fetch random items
+        //     menuItems = await MenuItem.aggregate([{ $sample: { size: 5 } }]);
+        // }
 
-        if (nonZeroPurchasesCount > 0) {
-            // If there are items with non-zero total purchases, sort by total purchases
-            menuItems = await MenuItem.find().sort({ totalpurchases: -1 });
+
+
+        const menuItems = await MenuItem.find().sort({ totalpurchases: -1 });
+
+        // Filter out items with non-zero total purchases
+        const trendingItems = menuItems.filter(item => item.totalpurchases > 0);
+
+        let itemsToSend;
+
+        // Check if there are at least 5 trending items
+        if (trendingItems.length >= 5) {
+            // If there are at least 5 trending items, send the top 5 items
+            itemsToSend = trendingItems.slice(0, 5);
         } else {
-            // If all items have zero total purchases, fetch random items
-            menuItems = await MenuItem.aggregate([{ $sample: { size: 5 } }]);
+            // If there are fewer than 5 trending items, send all trending items and fill the rest with random items
+            itemsToSend = trendingItems.concat(menuItems.filter(item => item.totalpurchases === 0).slice(0, 5 - trendingItems.length));
         }
 
         // Check ingredient quantity for each menu item
@@ -414,8 +431,9 @@ router.get("/menuitemsTrending/", async(req, res) => {
             }
         }));
 
-        res.json(menuItems.slice(0, 6));
-        // res.json(menuItems);
+        // res.json(menuItems.slice(0, 6));
+
+        res.json(itemsToSend);
     } catch (error) {
         console.error(error);
         res.status(500).send("Server Error");
@@ -426,12 +444,12 @@ router.get("/menuitemsTrending/", async(req, res) => {
 
 
 
-router.post("/updateTotalPurchases", async (req, res) => {
+router.post("/updateTotalPurchases", async(req, res) => {
     try {
         const purchaseData = req.body;
 
         console.log(purchaseData)
-        // Assuming your MenuItem model has a field named 'name'
+            // Assuming your MenuItem model has a field named 'name'
         for (const purchase of purchaseData) {
             const { name, quantity } = purchase;
 
@@ -443,7 +461,7 @@ router.post("/updateTotalPurchases", async (req, res) => {
             }
 
             menuItem.totalpurchases += parseInt(quantity, 10);
-            
+
 
             // Save the updated menu item
             menuItem = await menuItem.save();

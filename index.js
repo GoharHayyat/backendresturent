@@ -23,6 +23,7 @@ app.use("/Orders", express.static("Orders"))
 app.use("/Reservation", express.static("Reservation"))
 app.use("/Coupon", express.static("Coupon"))
 app.use("/admin", express.static("admin"))
+app.use("/HR", express.static("HR"));
 
 
 //testing
@@ -83,6 +84,7 @@ const qrCodeRouter = require('./routes/qrgenrate');
 const ReservationRouter = require('./routes/ReservationRoutes')
 const CouponRouter = require('./routes/CouponRoutes')
 const adminRouter = require('./routes/adminroutes')
+const hrRouter = require('./routes/HRroutes')
 
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
@@ -213,7 +215,7 @@ app.use(qrCodeRouter)
 app.use(ReservationRouter)
 app.use(CouponRouter)
 app.use(adminRouter)
-
+app.use(hrRouter)
 
 mongoose.connect(mongoDBURL).then((result) => {
     console.log("connected");
