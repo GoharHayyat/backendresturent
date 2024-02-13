@@ -25,6 +25,11 @@ const reservationSchema = new mongoose.Schema({
     coupon: {
         type: String,
     },
+    status: {
+        type: String,
+        default: "pending",
+    },
+
 });
 
 module.exports = mongoose.model('Reservation', reservationSchema);

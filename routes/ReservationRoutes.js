@@ -3,6 +3,7 @@ const router = express.Router();
 const Reservation = require('../db/Reservation');
 const Coupon = require('../db/Coupon');
 const nodemailer = require('nodemailer');
+// const moment = require('moment');
 
 
 
@@ -75,7 +76,7 @@ router.post('/book', async(req, res) => {
             from: process.env.EMAIL_FROM,
             to: email,
             subject: 'Welcome to Restaurant Hub!',
-            text: `Dear ${name},\n\nThank you for choosing Restaurant Hub. This is the Confirmationm mail that your table is Reserved.\n\nWe look forward to serving you!\n\nBest regards,\nRestaurant Hub`
+            text: `Dear ${name},\n\nThank you for choosing Restaurant Hub. This is the Confirmationm mail that your reservation request has been received. Our staff will review it and notify you of the status shortly.\n\nWe look forward to serving you!\n\nBest regards,\nRestaurant Hub`
         };
 
         transporter.sendMail(mailOptions, (error, info) => {
@@ -128,10 +129,35 @@ router.get('/availability', async(req, res) => {
 
 
 
+// router.get('/reservations', async(req, res) => {
+//     try {
+//         // Query the Reservation collection to get all reservations
+//         const reservations = await Reservation.find();
+
+//         // Send the retrieved reservations as a response
+//         res.json(reservations);
+//     } catch (error) {
+//         // If an error occurs, send a 500 status with the error message
+//         res.status(500).json({ error: error.message });
+//     }
+// });
+
+
 router.get('/reservations', async(req, res) => {
     try {
-        // Query the Reservation collection to get all reservations
-        const reservations = await Reservation.find();
+
+        const currentDate = new Date();
+        const startOfDay = new Date(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate(), 0, 0, 0);
+        const startOfDayUnix = startOfDay.getTime();
+
+        // Query the Reservation collection to get reservations for the current date and future dates, sorted by date in ascending order
+        const reservations = await Reservation.find({
+            date: {
+                $gte: startOfDayUnix
+            }
+        }).sort({ date: 1 }); // Sort by date in ascending order
+
+
 
         // Send the retrieved reservations as a response
         res.json(reservations);
@@ -170,5 +196,81 @@ router.get('/filters', async(req, res) => {
         res.status(500).json({ error: 'Internal server error' });
     }
 });
+
+
+router.put('/approveReservation/:id', async(req, res) => {
+    try {
+        const reservationId = req.params.id;
+        const { status } = req.body;
+
+        // Check if the reservation exists
+        const reservation = await Reservation.findById(reservationId);
+        if (!reservation) {
+            return res.status(404).json({ error: 'Reservation not found' });
+        }
+
+        // Update the status of the reservation
+        reservation.status = status;
+        await reservation.save();
+        const mailOptions = {
+            from: process.env.EMAIL_FROM,
+            to: reservation.email,
+            subject: 'Booking Update!',
+            text: `Dear ${reservation.name},\n\n Your Reservation table is Booked!!\n\nBest regards,\nRestaurant Hub`
+        };
+
+        transporter.sendMail(mailOptions, (error, info) => {
+            if (error) {
+                console.error('Error sending email:', error);
+            } else {
+                console.log('Email sent:', info.response);
+            }
+        });
+
+        // Send the updated reservation as the response
+        res.json(reservation);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+});
+
+router.put('/cancelReservation/:id', async(req, res) => {
+    try {
+        const reservationId = req.params.id;
+        const { status } = req.body;
+
+        // Check if the reservation exists
+        const reservation = await Reservation.findById(reservationId);
+        if (!reservation) {
+            return res.status(404).json({ error: 'Reservation not found' });
+        }
+
+        // Update the status of the reservation
+        reservation.status = status;
+        await reservation.save();
+        const mailOptions = {
+            from: process.env.EMAIL_FROM,
+            to: reservation.email,
+            subject: 'Booking Update!',
+            text: `Dear ${reservation.name},\n\n Due to unfortunate Reason your booking has been canceled\n\nBest regards,\nRestaurant Hub`
+        };
+
+        transporter.sendMail(mailOptions, (error, info) => {
+            if (error) {
+                console.error('Error sending email:', error);
+            } else {
+                console.log('Email sent:', info.response);
+            }
+        });
+
+        // Send the updated reservation as the response
+        res.json(reservation);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+});
+
 
 module.exports = router;
