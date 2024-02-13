@@ -15,6 +15,10 @@ const qrCodeSchema = new mongoose.Schema({
     type: Date,
     default: Date.now,
   },
+  status: {
+    type: String,
+    default: "Not Active",
+  },
 });
 
 const QRCode = mongoose.model('QRCode', qrCodeSchema);
