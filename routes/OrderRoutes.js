@@ -38,14 +38,34 @@ router.post("/orders", async(req, res) => {
                     });
                 }
 
-                const characters =
-                    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+                // const characters =
+                //     "abcdefghijklmnopqrstuvwxyz0123456789";
+                // let invoiceid = "";
+
+                // for (let i = 0; i < 5; i++) {
+                //     const randomIndex = Math.floor(Math.random() * characters.length);
+                //     invoiceid += characters.charAt(randomIndex);
+                // }
+                const characters = "abcdefghijklmnopqrstuvwxyz0123456789";
                 let invoiceid = "";
 
-                for (let i = 0; i < 20; i++) {
-                    const randomIndex = Math.floor(Math.random() * characters.length);
-                    invoiceid += characters.charAt(randomIndex);
+                // Generate current date in "dd/mm/yy" format
+                const currentDatee = new Date();
+                const dayy = currentDatee.getDate().toString().padStart(2, "0");
+                const monthh = (currentDatee.getMonth() + 1).toString().padStart(2, "0");
+                const yearr = currentDatee.getFullYear().toString().slice(-2); // Take last two digits of the year
+                const formattedDatee = `${dayy}${monthh}${yearr}`;
+
+                invoiceid += formattedDatee; // Append formatted date
+
+                // Generate random 3-digit number
+                for (let i = 0; i < 5; i++) {
+                    invoiceid += Math.floor(Math.random() * 10); // Append random digit (0-9)
                 }
+
+
+
+
                 const currentDate = new Date();
                 const year = currentDate.getFullYear();
                 const month = currentDate.getMonth() + 1; // Months are zero-based, so add 1
