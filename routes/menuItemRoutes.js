@@ -38,18 +38,6 @@ router.post("/menuitems", upload.single("image"), async(req, res) => {
 
     const imagePath = `MenuItems/${ req.file.filename}`;
 
-    // console.log(
-    //     name,
-    //     ctitle,
-    //     menuItemPrice,
-    //     menuItemDescription,
-    //     calories,
-    //     carbohydrates,
-    //     fats,
-    //     protein,
-    //     totalpurchases
-    // );
-    // console.log(ctitle);
 
     try {
         const controlPanels = await ControlPanel.find({});
@@ -88,18 +76,20 @@ router.post("/menuitems", upload.single("image"), async(req, res) => {
     }
 });
 
-// router.get("/menuitems/:category", async (req, res) => {
-//   try {
-//     const { category } = req.params;
-//     // console.log(category);
-//     const menuItems = await MenuItem.find({ category });
-//     res.send(menuItems);
-//     // console.log(menuItems);
-//   } catch (error) {
-//     // console.error(error);
-//     res.status(500).send("Server Error");
-//   }
+//Menu items for populate in admin
+// router.get("popmenuitems/:id", async(req, res) => {
+//     try {
+//         const menuItem = await MenuItem.findById(req.params.id);
+//         if (!menuItem) {
+//             return res.status(404).json({ message: "Menu item not found" });
+//         }
+//         res.json(menuItem);
+//     } catch (error) {
+//         console.error(error);
+//         res.status(500).json({ message: "Server error" });
+//     }
 // });
+
 
 
 router.get("/menuitems/:category", async(req, res) => {
@@ -247,7 +237,7 @@ router.get("/menuitemsgetproductdetails/:id", async(req, res) => {
     }
 });
 
-module.exports = router;
+
 
 router.get("/menuitemsUP/:id", async(req, res) => {
     try {
@@ -306,6 +296,10 @@ router.delete("/deleteitem/:id", async(req, resp) => {
     resp.send(result);
 });
 
+
+
+
+//For udpate item
 router.put("/menuitemsupdate/:id", upload.single("image"), async(req, res) => {
     try {
         const { id } = req.params;
@@ -317,31 +311,38 @@ router.put("/menuitemsupdate/:id", upload.single("image"), async(req, res) => {
             protein,
             totalpurchases,
             Price,
-            describtion,
+
         } = req.body;
-        let menuItem = await MenuItem.findById(id);
-        if (!menuItem) {
+
+        let updateFields = {
+            title,
+            calories,
+            carbohydrates,
+            fats,
+            protein,
+            totalpurchases,
+            Price,
+        };
+
+        if (req.file) {
+            updateFields.image = req.file.path;
+        }
+
+        const updatedMenuItem = await MenuItem.findByIdAndUpdate(
+            id,
+            updateFields, { new: true }
+        );
+
+        if (!updatedMenuItem) {
             return res.status(404).json({ msg: "Menu item not found" });
         }
-        menuItem.title = title;
-        menuItem.calories = calories;
-        menuItem.carbohydrates = carbohydrates;
-        menuItem.fats = fats;
-        menuItem.protein = protein;
-        menuItem.totalpurchases = totalpurchases;
-        menuItem.Price = Price;
-        menuItem.describtion = describtion;
-        if (req.file) {
-            menuItem.image = req.file.path;
-        }
-        menuItem = await menuItem.save();
-        res.json(menuItem);
+
+        res.json(updatedMenuItem);
     } catch (error) {
         console.error(error);
         res.status(500).send("Server Error");
     }
 });
-
 // Handling Trending Items
 
 // router.get("/menuitemsTrending/", async(req, res) => {

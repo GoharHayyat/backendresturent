@@ -26,38 +26,6 @@ app.use("/admin", express.static("admin"))
 app.use("/HR", express.static("HR"));
 
 
-//testing
-
-// app.use(express.static("public"));
-
-// app.use(
-//   cors({
-//     origin: "http://localhost:3000",
-//   })
-// );
-
-// router.post('/manageFavorite', async(req, res) => {
-//     const { userId, favorites } = req.body;
-//     (req.body)
-
-//     try {
-//         // Find the user by ID
-//         const user = await User.findById(userId);
-
-//         if (!user) {
-//             return res.status(404).json({ error: 'User not found' });
-//         }
-
-//         // Update the user's favorites
-//         user.favorites = favorites;
-//         await user.save();
-
-//         res.json({ success: true });
-//     } catch (error) {
-//         console.error(error);
-//         res.status(500).json({ error: 'Server error' });
-//     }
-// });
 
 
 app.use(cors());
@@ -71,10 +39,7 @@ app.use(
     })
 );
 
-// app.use(express.json());
-
-// app.use(express.json({ limit: "50mb" }));
-// app.use(express.urlencoded({ limit: "50mb" }));
+//
 
 const menuItemRouter = require("./routes/menuItemRoutes");
 const IngredientRouter = require("./routes/Ingredient");
@@ -195,12 +160,26 @@ app.delete("/deleteCategory/:id", async(req, resp) => {
 //     });
 // });
 
+// app.get("/search/:key", async(req, resp) => {
+//     let result = await ControlPanel.find({
+//         $or: [{ title: { $regex: req.params.key } }],
+//     });
+//     resp.send(result);
+// });
+
 app.get("/search/:key", async(req, resp) => {
-    let result = await ControlPanel.find({
-        $or: [{ title: { $regex: req.params.key } }],
-    });
-    resp.send(result);
+    try {
+        const regex = new RegExp(req.params.key, 'i');
+        const result = await ControlPanel.find({
+            $or: [{ title: { $regex: regex } }],
+        });
+        resp.send(result);
+    } catch (error) {
+        console.error(error);
+        resp.status(500).send("Server Error");
+    }
 });
+
 
 app.get("/", (req, resp) => {
     resp.send("Server is working");
