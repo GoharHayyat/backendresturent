@@ -31,7 +31,7 @@ const transporter = nodemailer.createTransport({
 
 router.post("/orders", async(req, res) => {
             try {
-                const { userId, products, totalPrice, tableNo } = req.body;
+                const { userId, products, totalPrice, tableNo, onlinePayment } = req.body;
                 // console.log(req.body);
 
                 const user = await User.findById(userId);
@@ -283,7 +283,7 @@ router.post("/orders", async(req, res) => {
       }
     });
 
-    const order = new Orders({ userId, products, totalPrice, invoiceid,tableNo });
+    const order = new Orders({ userId, products, totalPrice, invoiceid,tableNo,onlinePayment });
 
     await order.save();
 
