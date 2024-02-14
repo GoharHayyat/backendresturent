@@ -5,7 +5,7 @@ const Orders = require("../db/Orders");
 const User = require("../db/user");
 router.use(bodyParser.json());
 const mongoose = require("mongoose");
-const dotenv = require('dotenv');
+const dotenv = require("dotenv");
 dotenv.config();
 
 const Stripe = require("stripe");
@@ -20,68 +20,55 @@ const stripe = Stripe(STRIPE_SECRET_KEY);
 const nodemailer = require("nodemailer");
 
 const transporter = nodemailer.createTransport({
-    host: "smtp.gmail.com",
-    port: 465,
-    secure: true,
-    auth: {
-        user: process.env.EMAIL_FROM,
-        pass: process.env.EMAIL_PASSWORD,
-    },
+  host: "smtp.gmail.com",
+  port: 465,
+  secure: true,
+  auth: {
+    user: process.env.EMAIL_FROM,
+    pass: process.env.EMAIL_PASSWORD,
+  },
 });
 
-router.post("/orders", async(req, res) => {
-            try {
-                const { userId, products, totalPrice, tableNo, onlinePayment } = req.body;
-                // console.log(req.body);
+router.post("/orders", async (req, res) => {
+  try {
+    const { userId, products, totalPrice, tableNo, onlinePayment } = req.body;
+    // console.log(req.body);
 
-                const user = await User.findById(userId);
+    const user = await User.findById(userId);
 
-                if (!user) {
-                    return res.status(404).json({
-                        success: false,
-                        error: "User not Found",
-                    });
-                }
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        error: "User not Found",
+      });
+    }
 
-                // const characters =
-                //     "abcdefghijklmnopqrstuvwxyz0123456789";
-                // let invoiceid = "";
+    const characters = "abcdefghijklmnopqrstuvwxyz0123456789";
+    let invoiceid = "";
 
-                // for (let i = 0; i < 5; i++) {
-                //     const randomIndex = Math.floor(Math.random() * characters.length);
-                //     invoiceid += characters.charAt(randomIndex);
-                // }
-                const characters = "abcdefghijklmnopqrstuvwxyz0123456789";
-                let invoiceid = "";
+    // Generate current date in "dd/mm/yy" format
+    const currentDatee = new Date();
+    const dayy = currentDatee.getDate().toString().padStart(2, "0");
+    const monthh = (currentDatee.getMonth() + 1).toString().padStart(2, "0");
+    const yearr = currentDatee.getFullYear().toString().slice(-2); // Take last two digits of the year
+    const formattedDatee = `${dayy}${monthh}${yearr}`;
 
-                // Generate current date in "dd/mm/yy" format
-                const currentDatee = new Date();
-                const dayy = currentDatee.getDate().toString().padStart(2, "0");
-                const monthh = (currentDatee.getMonth() + 1).toString().padStart(2, "0");
-                const yearr = currentDatee.getFullYear().toString().slice(-2); // Take last two digits of the year
-                const formattedDatee = `${dayy}${monthh}${yearr}`;
+    invoiceid += formattedDatee; // Append formatted date
 
-                invoiceid += formattedDatee; // Append formatted date
+    // Generate random 3-digit number
+    for (let i = 0; i < 5; i++) {
+      invoiceid += Math.floor(Math.random() * 10); // Append random digit (0-9)
+    }
 
-                // Generate random 3-digit number
-                for (let i = 0; i < 5; i++) {
-                    invoiceid += Math.floor(Math.random() * 10); // Append random digit (0-9)
-                }
-
-
-
-
-                const currentDate = new Date();
-                const year = currentDate.getFullYear();
-                const month = currentDate.getMonth() + 1; // Months are zero-based, so add 1
-                const day = currentDate.getDate();
-                const formattedDate = `${day < 10 ? "0" : ""}${day}-${
+    const currentDate = new Date();
+    const year = currentDate.getFullYear();
+    const month = currentDate.getMonth() + 1; // Months are zero-based, so add 1
+    const day = currentDate.getDate();
+    const formattedDate = `${day < 10 ? "0" : ""}${day}-${
       month < 10 ? "0" : ""
     }${month}-${year}`;
 
-
-
-                const htmlTemplate = `
+    const htmlTemplate = `
         <html>
         <head>
             <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
@@ -165,7 +152,9 @@ router.post("/orders", async(req, res) => {
 
                                             <p class="logo" style="margin-right:0;margin-left:0;line-height:28px;font-weight:600;font-size:21px;color:#111111;text-align:center;margin-top:0;margin-bottom:40px;" ><span style="color:#0052e2;font-family:Arial, Helvetica, sans-serif;font-size:30px;vertical-align:bottom;" >❖&nbsp;</span>RestaurantHub</p>
 
-                                            <h1 style="margin-top:0;color:#111111;font-size:24px;line-height:36px;font-weight:600;margin-bottom:24px;" >Hi ${user.name},</h1>
+                                            <h1 style="margin-top:0;color:#111111;font-size:24px;line-height:36px;font-weight:600;margin-bottom:24px;" >Hi ${
+                                              user.name
+                                            },</h1>
 
                                             <p style="color:#4a5566;margin-top:20px;margin-bottom:20px;margin-right:0;margin-left:0;font-size:16px;line-height:28px;" >This is an invoice for your recent purchase.</p>
 
@@ -176,7 +165,9 @@ router.post("/orders", async(req, res) => {
                                                         <table width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;" >
                                                             <tr>
                                                                 <td valign="middle" style="word-break:break-word;font-family:'Inter', Helvetica, Arial, sans-serif;font-size:16px;line-height:24px;" >
-                                                                    <h3 style="margin-top:0;color:#111111;font-size:18px;line-height:26px;font-weight:600;margin-bottom:24px;" >${tableNo.tableId}</h3>
+                                                                    <h3 style="margin-top:0;color:#111111;font-size:18px;line-height:26px;font-weight:600;margin-bottom:24px;" >${
+                                                                      tableNo.tableId
+                                                                    }</h3>
                                                                 </td>
                                                                 <td align="right" valign="middle" style="word-break:break-word;font-family:'Inter', Helvetica, Arial, sans-serif;font-size:16px;line-height:24px;" >
                                                                     <h3 style="margin-top:0;color:#111111;font-size:18px;line-height:26px;font-weight:600;margin-bottom:24px;" >${formattedDate}</h3>
@@ -197,19 +188,30 @@ router.post("/orders", async(req, res) => {
                                                                 </th>
                                                             </tr>
 
-                                                            ${products.map(product => `
+                                                            ${products
+                                                              .map(
+                                                                (product) => `
                                                             <tr>
                                                                 <td valign="middle" style="word-break:break-word;font-family:'Inter', Helvetica, Arial, sans-serif;font-size:16px;line-height:24px;padding-top:14px;padding-bottom:14px;padding-right:0;padding-left:0;border-top-width:1px;border-top-style:solid;border-top-color:#e2e8f0;" >
-                                                                    ${product.name}
+                                                                    ${
+                                                                      product.name
+                                                                    }
                                                                 </td>
                                                                 <td valign="middle" align="right" style="word-break:break-word;font-family:'Inter', Helvetica, Arial, sans-serif;font-size:16px;line-height:24px;padding-top:14px;padding-bottom:14px;padding-right:0;padding-left:0;border-top-width:1px;border-top-style:solid;border-top-color:#e2e8f0;" >
-                                                                    ${product.quantity}
+                                                                    ${
+                                                                      product.quantity
+                                                                    }
                                                                 </td>
                                                                 <td valign="middle" align="right" style="word-break:break-word;font-family:'Inter', Helvetica, Arial, sans-serif;font-size:16px;line-height:24px;padding-top:14px;padding-bottom:14px;padding-right:0;padding-left:0;border-top-width:1px;border-top-style:solid;border-top-color:#e2e8f0;" >
-                                                                    ${product.price * product.quantity}
+                                                                    ${
+                                                                      product.price *
+                                                                      product.quantity
+                                                                    }
                                                                 </td>
                                                             </tr>
-                                                        `).join('')}
+                                                        `
+                                                              )
+                                                              .join("")}
 
                                                             <tr>
                                                                 <td style="word-break:break-word;font-family:'Inter', Helvetica, Arial, sans-serif;font-size:16px;line-height:24px;padding-top:14px;padding-bottom:14px;padding-right:0;padding-left:0;border-top-width:1px;border-top-style:solid;border-top-color:#e2e8f0;" >
@@ -258,8 +260,6 @@ router.post("/orders", async(req, res) => {
         </html>
     `;
 
-
-
     const options = {
       from: "info.restaurantshub@gmail.com",
       to: user.email,
@@ -283,7 +283,14 @@ router.post("/orders", async(req, res) => {
       }
     });
 
-    const order = new Orders({ userId, products, totalPrice, invoiceid,tableNo,onlinePayment });
+    const order = new Orders({
+      userId,
+      products,
+      totalPrice,
+      invoiceid,
+      tableNo,
+      onlinePayment,
+    });
 
     await order.save();
 
@@ -296,49 +303,30 @@ router.post("/orders", async(req, res) => {
   }
 });
 
-// router.get('/getorder/:userId', async(req, res) => {
-//     try {
-//         const userId = req.params.userId;
-//         console.log(userId)
+router.get("/getorder/:userId", async (req, res) => {
+  try {
+    const userId = req.params.userId;
+    console.log(userId);
 
-//         // Find orders by user ID
-//         const orders = await Orders.find({ userId });
-//         console.log('Orders found:', orders);
+    // Find orders by user ID, sort by creation date in descending order, and limit to 5
+    let orders = await Orders.find({ userId }).sort({ createdAt: -1 }).limit(5);
+    console.log("Orders found:", orders);
 
-//         if (!orders) {
-//             return res.status(404).json({ message: 'No orders found for the specified user' });
-//         }
-
-//         res.status(200).json({ orders });
-//     } catch (error) {
-//         console.error('Error retrieving orders:', error);
-//         res.status(500).json({ message: 'Failed to retrieve orders' });
-//     }
-// });
-router.get('/getorder/:userId', async (req, res) => {
-    try {
-        const userId = req.params.userId;
-        console.log(userId)
-
-        // Find orders by user ID, sort by creation date in descending order, and limit to 5
-        let orders = await Orders.find({ userId }).sort({ createdAt: -1 }).limit(5);
-        console.log('Orders found:', orders);
-
-        if (!orders || orders.length === 0) {
-            return res.status(404).json({ message: 'No orders found for the specified user' });
-        }
-
-        // Reverse the order of the array
-        orders = orders.reverse();
-
-        res.status(200).json({ orders });
-    } catch (error) {
-        console.error('Error retrieving orders:', error);
-        res.status(500).json({ message: 'Failed to retrieve orders' });
+    if (!orders || orders.length === 0) {
+      return res
+        .status(404)
+        .json({ message: "No orders found for the specified user" });
     }
+
+    // Reverse the order of the array
+    orders = orders.reverse();
+
+    res.status(200).json({ orders });
+  } catch (error) {
+    console.error("Error retrieving orders:", error);
+    res.status(500).json({ message: "Failed to retrieve orders" });
+  }
 });
-
-
 
 router.get("/allorders", async (req, res) => {
   try {
@@ -349,76 +337,80 @@ router.get("/allorders", async (req, res) => {
   }
 });
 
-router.put('/updatetheOrderStatus/:orderId', async (req, res) => {
-    const { orderStatus } = req.body;
-    const { orderId } = req.params;
-  
-    try {
-      // Find the order by ID and update the orderStatus
-      const updatedOrder = await Orders.findByIdAndUpdate(
-        orderId,
-        { $set: { orderstatus: orderStatus } },
-        { new: true } // To get the updated document as the result
-      );
-  
-      if (!updatedOrder) {
-        return res.status(404).json({ message: 'Order not found' });
-      }
-  
-      res.json(updatedOrder);
-    } catch (error) {
-      res.status(500).json({ message: error.message });
-    }
-  });
+router.put("/updatetheOrderStatus/:orderId", async (req, res) => {
+  const { orderStatus } = req.body;
+  const { orderId } = req.params;
 
-  router.put('/updatePaymentStatus/:id', async (req, res) => {
+  try {
+    // Find the order by ID and update the orderStatus
+    const updatedOrder = await Orders.findByIdAndUpdate(
+      orderId,
+      { $set: { orderstatus: orderStatus } },
+      { new: true } // To get the updated document as the result
+    );
+
+    if (!updatedOrder) {
+      return res.status(404).json({ message: "Order not found" });
+    }
+
+    res.json(updatedOrder);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
+router.put("/updatePaymentStatus/:id", async (req, res) => {
   const orderId = req.params.id;
-  console.log(orderId)
+  console.log(orderId);
 
   try {
     // Find the order by ID and update onlinepayment status
-    const order = await Orders.findByIdAndUpdate(orderId, { onlinePayment: true });
-
-    if (!order) {
-      return res.status(404).json({ error: 'Order not found' });
-    }
-
-    return res.status(200).json({ message: 'Online payment status updated successfully' });
-  } catch (error) {
-    console.error('Error updating online payment status:', error);
-    return res.status(500).json({ error: 'Internal server error' });
-  }
-});
-router.post("/stripe", async (req, res) => {
-  try {
-    const { products, user } = req.body;
-
-    // Additional validation or processing logic can go here
-
-    const session = await stripe.checkout.sessions.create({
-      payment_method_types: ["card"],
-      mode: "payment",
-      line_items: products.map((item) => ({
-        price_data: {
-          currency: "pkr",
-          product_data: {
-            name: item.item[1].name,
-          },
-          unit_amount: item.item[1].price * 100,
-        },
-        quantity: item.quantity,
-      })),
-      success_url: `${process.env.CALLBACK_LINK}success`,
-      cancel_url: `${process.env.CALLBACK_LINK}error`,
+    const order = await Orders.findByIdAndUpdate(orderId, {
+      onlinePayment: true,
     });
 
-    res.json({ url: session.url });
+    if (!order) {
+      return res.status(404).json({ error: "Order not found" });
+    }
+
+    return res
+      .status(200)
+      .json({ message: "Online payment status updated successfully" });
   } catch (error) {
-    console.error("Error processing Stripe request:", error);
-    res.status(500).json({ error: "Internal Server Error" });
+    console.error("Error updating online payment status:", error);
+    return res.status(500).json({ error: "Internal server error" });
   }
 });
 
+// router.post("/stripe", async (req, res) => {
+//   try {
+//     const { products, user } = req.body;
+
+//     // Additional validation or processing logic can go here
+
+//     const session = await stripe.checkout.sessions.create({
+//       payment_method_types: ["card"],
+//       mode: "payment",
+//       line_items: products.map((item) => ({
+//         price_data: {
+//           currency: "pkr",
+//           product_data: {
+//             name: item.item[1].name,
+//           },
+//           unit_amount: item.item[1].price * 100,
+//         },
+//         quantity: item.quantity,
+//       })),
+//       success_url: `${process.env.CALLBACK_LINK}success`,
+//       cancel_url: `${process.env.CALLBACK_LINK}error`,
+//     });
+
+//     res.json({ url: session.url });
+//   } catch (error) {
+//     console.error("Error processing Stripe request:", error);
+//     res.status(500).json({ error: "Internal Server Error" });
+//   }
+// });
 
 router.post("/stripe", async (req, res) => {
   try {

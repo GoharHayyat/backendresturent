@@ -22,6 +22,8 @@ router.post('/qrstore', async (req, res) => {
       tableId: tableid,
     });
 
+
+
     await qrCode.save();
 
     console.log('QR Code Information saved to MongoDB:', { table, tableid });
@@ -62,4 +64,34 @@ router.get('/qrcodestokens', async (req, res) => {
       res.status(500).json({ error: 'Internal Server Error' });
     }
   });
+
+
+router.post('/updatestatus', async (req, res) => {
+  try {
+    const { table, status } = req.body;
+
+    console.log(table)
+    console.log(status)
+
+    // Find the QRCode entry with the specified table
+    const qrCode = await QRCode.findOne({ table: table });
+
+    if (!qrCode) {
+      return res.status(404).json({ error: 'QR Code not found for the specified table' });
+    }
+
+    // Update the status field
+    qrCode.status = status || "Not Active"; // Use the received status or set default to "Not Active"
+    await qrCode.save();
+
+    console.log('QR Code Status updated in MongoDB:', { table, status });
+    res.status(200).json({ message: 'QR Code Status updated in MongoDB' });
+  } catch (error) {
+    console.error('Error updating QR Code Status in MongoDB:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
+module.exports = router;
+
 module.exports = router;
