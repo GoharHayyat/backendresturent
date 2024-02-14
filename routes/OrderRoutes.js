@@ -419,5 +419,36 @@ router.post("/stripe", async (req, res) => {
   }
 });
 
+
+router.post("/stripe", async (req, res) => {
+  try {
+    const { products, user } = req.body;
+
+    // Additional validation or processing logic can go here
+
+    const session = await stripe.checkout.sessions.create({
+      payment_method_types: ["card"],
+      mode: "payment",
+      line_items: products.map((item) => ({
+        price_data: {
+          currency: "pkr",
+          product_data: {
+            name: item.item[1].name,
+          },
+          unit_amount: item.item[1].price * 100,
+        },
+        quantity: item.quantity,
+      })),
+      success_url: `${process.env.CALLBACK_LINK}success`,
+      cancel_url: `${process.env.CALLBACK_LINK}error`,
+    });
+
+    res.json({ url: session.url });
+  } catch (error) {
+    console.error("Error processing Stripe request:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
 module.exports = router;
 //test
