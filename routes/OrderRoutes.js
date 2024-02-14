@@ -366,4 +366,23 @@ router.put('/updatetheOrderStatus/:orderId', async (req, res) => {
     }
   });
 
+  router.put('/updatePaymentStatus/:id', async (req, res) => {
+  const orderId = req.params.id;
+  console.log(orderId)
+
+  try {
+    // Find the order by ID and update onlinepayment status
+    const order = await Orders.findByIdAndUpdate(orderId, { onlinePayment: true });
+
+    if (!order) {
+      return res.status(404).json({ error: 'Order not found' });
+    }
+
+    return res.status(200).json({ message: 'Online payment status updated successfully' });
+  } catch (error) {
+    console.error('Error updating online payment status:', error);
+    return res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
 module.exports = router;
