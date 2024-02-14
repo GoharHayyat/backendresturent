@@ -43,19 +43,19 @@ router.post("/orders", async (req, res) => {
       });
     }
 
-    const characters =
-      "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-    let invoiceid = "";
+                const characters =
+                    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+                let invoiceid = "";
 
-    for (let i = 0; i < 20; i++) {
-      const randomIndex = Math.floor(Math.random() * characters.length);
-      invoiceid += characters.charAt(randomIndex);
-    }
-    const currentDate = new Date();
-    const year = currentDate.getFullYear();
-    const month = currentDate.getMonth() + 1; // Months are zero-based, so add 1
-    const day = currentDate.getDate();
-    const formattedDate = `${day < 10 ? "0" : ""}${day}-${
+                for (let i = 0; i < 20; i++) {
+                    const randomIndex = Math.floor(Math.random() * characters.length);
+                    invoiceid += characters.charAt(randomIndex);
+                }
+                const currentDate = new Date();
+                const year = currentDate.getFullYear();
+                const month = currentDate.getMonth() + 1; // Months are zero-based, so add 1
+                const day = currentDate.getDate();
+                const formattedDate = `${day < 10 ? "0" : ""}${day}-${
       month < 10 ? "0" : ""
     }${month}-${year}`;
 
@@ -347,27 +347,27 @@ router.get("/allorders", async (req, res) => {
   }
 });
 
-router.put("/updatetheOrderStatus/:orderId", async (req, res) => {
-  const { orderStatus } = req.body;
-  const { orderId } = req.params;
-
-  try {
-    // Find the order by ID and update the orderStatus
-    const updatedOrder = await Orders.findByIdAndUpdate(
-      orderId,
-      { $set: { orderstatus: orderStatus } },
-      { new: true } // To get the updated document as the result
-    );
-
-    if (!updatedOrder) {
-      return res.status(404).json({ message: "Order not found" });
+router.put('/updatetheOrderStatus/:orderId', async (req, res) => {
+    const { orderStatus } = req.body;
+    const { orderId } = req.params;
+  
+    try {
+      // Find the order by ID and update the orderStatus
+      const updatedOrder = await Orders.findByIdAndUpdate(
+        orderId,
+        { $set: { orderstatus: orderStatus } },
+        { new: true } // To get the updated document as the result
+      );
+  
+      if (!updatedOrder) {
+        return res.status(404).json({ message: 'Order not found' });
+      }
+  
+      res.json(updatedOrder);
+    } catch (error) {
+      res.status(500).json({ message: error.message });
     }
-
-    res.json(updatedOrder);
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-});
+  });
 
 //   router.post('/stripe', async (req, res) => {
 //     console.log("in api");
