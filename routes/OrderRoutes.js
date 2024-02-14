@@ -391,7 +391,6 @@ router.put('/updatetheOrderStatus/:orderId', async (req, res) => {
 });
 
 
-
 router.post("/stripe", async (req, res) => {
   try {
     const { products, user } = req.body;
