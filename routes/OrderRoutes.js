@@ -8,6 +8,11 @@ const mongoose = require("mongoose");
 const dotenv = require('dotenv');
 dotenv.config();
 
+const Stripe = require("stripe");
+
+const STRIPE_SECRET_KEY = process.env.STRIPE_SECRET_KEY;
+const stripe = Stripe(STRIPE_SECRET_KEY);
+
 // Rest of your code
 
 // const { EMAIL_FROM, EMAIL_PASSWORD } = require("../config/config");
@@ -382,6 +387,35 @@ router.put('/updatetheOrderStatus/:orderId', async (req, res) => {
   } catch (error) {
     console.error('Error updating online payment status:', error);
     return res.status(500).json({ error: 'Internal server error' });
+  }
+});
+router.post("/stripe", async (req, res) => {
+  try {
+    const { products, user } = req.body;
+
+    // Additional validation or processing logic can go here
+
+    const session = await stripe.checkout.sessions.create({
+      payment_method_types: ["card"],
+      mode: "payment",
+      line_items: products.map((item) => ({
+        price_data: {
+          currency: "pkr",
+          product_data: {
+            name: item.item[1].name,
+          },
+          unit_amount: item.item[1].price * 100,
+        },
+        quantity: item.quantity,
+      })),
+      success_url: `${process.env.CALLBACK_LINK}success`,
+      cancel_url: `${process.env.CALLBACK_LINK}error`,
+    });
+
+    res.json({ url: session.url });
+  } catch (error) {
+    console.error("Error processing Stripe request:", error);
+    res.status(500).json({ error: "Internal Server Error" });
   }
 });
 
