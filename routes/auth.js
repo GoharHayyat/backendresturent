@@ -16,7 +16,6 @@ router.post('/manageFavorite', async(req, res) => {
     // console.log(req.body);
 
     try {
-        // Find the user by ID
         const user = await User.findById(userId);
 
         if (!user) {
