@@ -10,6 +10,10 @@ const HRSchema = new mongoose.Schema({
     department: String,
     designation: String,
     shift: String,
+    status: {
+        type: Boolean,
+        default: true,
+    }
 });
 
 module.exports = mongoose.model('HR', HRSchema);
