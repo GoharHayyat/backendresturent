@@ -4,7 +4,7 @@ const Reservation = require('../db/Reservation');
 const Coupon = require('../db/Coupon');
 const nodemailer = require('nodemailer');
 // const moment = require('moment');
-
+const ContactUs = require('../db/ContactUs')
 
 
 
@@ -271,6 +271,34 @@ router.put('/cancelReservation/:id', async(req, res) => {
         res.status(500).json({ error: 'Internal Server Error' });
     }
 });
+
+// Contactus Api
+
+router.post('/contactus', async(req, res) => {
+    // Assuming the form data is sent as JSON with fields: name, email, message
+    try {
+        // Extract form data
+        const { name, email, message } = req.body;
+
+        // Create a new contact instance
+        const newContact = new ContactUs({
+            name,
+            email,
+            message,
+        });
+
+        // Save the contact instance to the database
+        await newContact.save();
+
+        // Send a success response back to the client
+        res.status(200).json({ message: 'Form submission saved successfully!' });
+    } catch (error) {
+        // Handle any errors
+        console.error('Error saving form submission:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
 
 
 module.exports = router;

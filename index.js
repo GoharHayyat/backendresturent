@@ -114,14 +114,7 @@ app.post("/updateCategory/:id", upload.single("image"), async(req, res) => {
     }
 });
 
-// app.get("/getAllproduct", async (req, resp) => {
-//   resp.setHeader("Access-Control-Allow-Origin", "http://localhost:3000");
-//   const data = await ControlPanel.find();
-//   //   (title);
 
-//   resp.send(data);
-//   //   resp.json(data);
-// });
 app.get("/getAllproduct", async(req, resp) => {
     resp.setHeader("Access-Control-Allow-Origin", "*"); // Allow requests from all origins
     const data = await ControlPanel.find();
@@ -138,34 +131,7 @@ app.delete("/deleteCategory/:id", async(req, resp) => {
     // resp.send(result);
 });
 
-// app.post("/delitems/:id", (req, res) => {
-//   // const id = req.body.id;
-//   // const items = req.body.items;
-//   const { id, items } = req.body;
-//   (id, items);
 
-//   ControlPanel.findByIdAndUpdate(
-//     { _id: id },
-//     {
-//       menu: items,
-//     }
-//   )
-//     .then((result) => {
-//       (`Item ${id} deleted`, result);
-//       res.json({ message: "Item deleted successfully" });
-//     })
-//     .catch((err) => {
-//       console.error(err);
-//       res.status(500).json({ message: "Error deleting item" });
-//     });
-// });
-
-// app.get("/search/:key", async(req, resp) => {
-//     let result = await ControlPanel.find({
-//         $or: [{ title: { $regex: req.params.key } }],
-//     });
-//     resp.send(result);
-// });
 
 app.get("/search/:key", async(req, resp) => {
     try {
